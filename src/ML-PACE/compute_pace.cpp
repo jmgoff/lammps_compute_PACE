@@ -11,10 +11,10 @@
 ------------------------------------------------------------------------- */
 
 #include "compute_pace.h"
-#include "ace_evaluator.h"
-#include "ace_c_basis.h"
-#include "ace_abstract_basis.h"
-#include "ace_types.h"
+#include "ace-evaluator/ace_evaluator.h"
+#include "ace-evaluator/ace_c_basis.h"
+#include "ace-evaluator/ace_abstract_basis.h"
+#include "ace-evaluator/ace_types.h"
 #include <cstring>
 #include <map>
 
@@ -142,7 +142,7 @@ void ComputePACE::init()
   if (force->pair == nullptr)
     error->all(FLERR,"Compute pace requires a pair style be defined");
 
-  printf("----- cutoffmax: %f\n", cutmax);
+  //printf("----- cutoffmax: %f\n", cutmax);
   if (cutmax > force->pair->cutforce)
     error->all(FLERR,"Compute pace cutoff is longer than pairwise cutoff");
 
@@ -379,7 +379,7 @@ void ComputePACE::compute_array()
         int k = typeoffset_global;
 
         for (int icoeff = 0; icoeff < ncoeff; icoeff++){
-          pace[0][k++] += Bs(icoeff);
+          pace[irow][k++] += Bs(icoeff);
         }
       } else {
         int k = 3;
