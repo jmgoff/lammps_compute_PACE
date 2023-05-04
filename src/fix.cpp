@@ -81,8 +81,8 @@ Fix::Fix(LAMMPS *lmp, int /*narg*/, char **arg) :
   stores_ids = 0;
 
   scalar_flag = vector_flag = array_flag = 0;
-  peratom_flag = local_flag = 0;
-  global_freq = local_freq = peratom_freq = -1;
+  peratom_flag = local_flag = pergrid_flag = 0;
+  global_freq = local_freq = peratom_freq = pergrid_freq = -1;
   size_vector_variable = size_array_rows_variable = 0;
 
   comm_forward = comm_reverse = comm_border = 0;
@@ -102,15 +102,15 @@ Fix::Fix(LAMMPS *lmp, int /*narg*/, char **arg) :
   vflag_atom = cvflag_atom = 0;
   centroidstressflag = CENTROID_SAME;
 
-  // KOKKOS per-fix data masks
+  // KOKKOS package
 
   execution_space = Host;
   datamask_read = ALL_MASK;
   datamask_modify = ALL_MASK;
 
-  kokkosable = 0;
-  forward_comm_device = 0;
-  copymode = 0;
+  kokkosable = copymode = 0;
+  forward_comm_device = exchange_comm_device = sort_device = 0;
+  fuse_integrate_flag = 0;
 }
 
 /* ---------------------------------------------------------------------- */

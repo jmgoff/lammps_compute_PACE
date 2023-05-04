@@ -22,6 +22,8 @@ namespace LAMMPS_NS {
 
 class AtomKokkos : public Atom {
  public:
+  bool sort_classic;
+
   DAT::tdual_tagint_1d k_tag;
   DAT::tdual_int_1d k_type, k_mask;
   DAT::tdual_imageint_1d k_image;
@@ -34,6 +36,7 @@ class AtomKokkos : public Atom {
   DAT::tdual_float_1d k_q;
   DAT::tdual_float_1d k_radius;
   DAT::tdual_float_1d k_rmass;
+  DAT::tdual_float_1d_4 k_mu;
   DAT::tdual_v_array k_omega;
   DAT::tdual_v_array k_angmom;
   DAT::tdual_f_array k_torque;
@@ -78,12 +81,14 @@ class AtomKokkos : public Atom {
   DAT::tdual_int_scalar k_error_flag;
   dual_hash_type k_map_hash;
 
+  class AtomVecKokkos* avecKK;
+
   // map lookup function inlined for efficiency
   // return -1 if no map defined
 
   template<class DeviceType>
   KOKKOS_INLINE_FUNCTION
-  static int map_kokkos(tagint global, int map_style, DAT::tdual_int_1d k_map_array, dual_hash_type k_map_hash)
+  static int map_kokkos(tagint global, int map_style, const DAT::tdual_int_1d &k_map_array, const dual_hash_type &k_map_hash)
   {
     if (map_style == 1)
       return k_map_array.view<DeviceType>()(global);
@@ -95,16 +100,17 @@ class AtomKokkos : public Atom {
 
   template<class DeviceType>
   KOKKOS_INLINE_FUNCTION
-  static int map_find_hash_kokkos(tagint global, dual_hash_type &k_map_hash)
+  static int map_find_hash_kokkos(tagint global, const dual_hash_type &k_map_hash)
   {
     int local = -1;
-    auto d_map_hash = k_map_hash.view<DeviceType>();
+    auto& d_map_hash = k_map_hash.const_view<DeviceType>();
     auto index = d_map_hash.find(global);
     if (d_map_hash.valid_at(index))
       local = d_map_hash.value_at(index);
     return local;
   }
 
+  void init() override;
   void allocate_type_arrays() override;
   void sync(const ExecutionSpace space, unsigned int mask);
   void modified(const ExecutionSpace space, unsigned int mask);
@@ -116,6 +122,7 @@ class AtomKokkos : public Atom {
   virtual void deallocate_topology();
   void sync_modify(ExecutionSpace, unsigned int, unsigned int) override;
  private:
+  void sort_device();
   class AtomVec *new_avec(const std::string &, int, int &) override;
 };
 
