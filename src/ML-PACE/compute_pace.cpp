@@ -113,6 +113,10 @@ ComputePACE::ComputePACE(LAMMPS *lmp, int narg, char **arg) :
   }
   else size_array_cols = nvalues*atom->ntypes + 1;
   lastcol = size_array_cols-1;
+  
+  // store nvalues (number of descriptor in size_local_cols:
+  size_local_cols = size_array_cols; //nvalues;
+  size_local_rows = size_array_rows;
 
   ndims_peratom = ndims_force;
   size_peratom = ndims_peratom*nvalues*atom->ntypes;
@@ -159,7 +163,9 @@ void ComputePACE::init()
                  "pace:pace");
   memory->create(paceall,size_array_rows,size_array_cols,
                  "pace:paceall");
-  array = paceall;
+  array = pace; //paceall;
+  local_flag = bikflag; // store local flags
+  //local_flag = dgradflag; // store local flags
 
   // find compute for reference energy
 
@@ -384,7 +390,7 @@ void ComputePACE::compute_array()
     delete ace;
     } //group bit
   } // for ii loop
-  delete basis_set;
+  // delete basis_set;
   // accumulate force contributions to global array
   if (!dgradflag){
     for (int itype = 0; itype < atom->ntypes; itype++) {
