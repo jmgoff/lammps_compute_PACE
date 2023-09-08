@@ -20,6 +20,8 @@
 #include "kokkos_type.h"
 #include <type_traits>
 
+#include <Kokkos_Sort.hpp>
+
 namespace LAMMPS_NS {
 
 union d_ubuf {
@@ -37,6 +39,11 @@ class AtomVecKokkos : virtual public AtomVec {
  public:
   AtomVecKokkos(class LAMMPS *);
   ~AtomVecKokkos() override;
+
+  using KeyViewType = DAT::t_x_array;
+  using BinOp = BinOp3DLAMMPS<KeyViewType>;
+  virtual void
+    sort_kokkos(Kokkos::BinSort<KeyViewType, BinOp> &Sorter) = 0;
 
   virtual void sync(ExecutionSpace space, unsigned int mask) = 0;
   virtual void modified(ExecutionSpace space, unsigned int mask) = 0;
@@ -117,7 +124,6 @@ class AtomVecKokkos : virtual public AtomVec {
                            ExecutionSpace space,
                            DAT::tdual_int_1d &k_indices) = 0;
 
-
   int no_comm_vel_flag,no_border_vel_flag;
   int unpack_exchange_indices_flag;
   int size_exchange;
@@ -143,7 +149,7 @@ class AtomVecKokkos : virtual public AtomVec {
     typedef Kokkos::View<typename ViewType::data_type,
                  typename ViewType::array_layout,
                  typename std::conditional<
-                   std::is_same<typename ViewType::execution_space,LMPDeviceType>::value,
+                   std::is_same_v<typename ViewType::execution_space,LMPDeviceType>,
                    LMPPinnedHostType,typename ViewType::memory_space>::type,
                  Kokkos::MemoryTraits<Kokkos::Unmanaged> > mirror_type;
     if (buffer_size == 0) {
@@ -161,7 +167,7 @@ class AtomVecKokkos : virtual public AtomVec {
     typedef Kokkos::View<typename ViewType::data_type,
                  typename ViewType::array_layout,
                  typename std::conditional<
-                   std::is_same<typename ViewType::execution_space,LMPDeviceType>::value,
+                   std::is_same_v<typename ViewType::execution_space,LMPDeviceType>,
                    LMPPinnedHostType,typename ViewType::memory_space>::type,
                  Kokkos::MemoryTraits<Kokkos::Unmanaged> > mirror_type;
     if (buffer_size == 0) {
