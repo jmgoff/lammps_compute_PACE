@@ -2,8 +2,6 @@
 
 mkdir build && cd build
 # Build and compile to use the fix python/gridforceace
-#NOTE first add your numpy include dir to your cplus include path
-export CPLUS_INCLUDE_PATH=$(python -c "import numpy; print(numpy.get_include())")
 
 cmake ../cmake -DLAMMPS_EXCEPTIONS=yes \
                -DBUILD_SHARED_LIBS=yes \
@@ -14,14 +12,13 @@ cmake ../cmake -DLAMMPS_EXCEPTIONS=yes \
                -DPKG_ML-PACE=yes \
                -DPKG_ML-IAP=yes \
                -DPKG_MLIAP_ENABLE_PYTHON=yes \
-               -DPYTHON_EXECUTABLE:FILEPATH=`which python` \
-               -DPYTHON_INCLUDE_DIR=$(python -c "import sysconfig; print(sysconfig.get_path('include'))")  \
-               -DPYTHON_LIBRARY=$(python -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))") 
+               -DPKG_PYTHON_ENABLE_GRIDFORCE=yes \
+               -DPYTHON_EXECUTABLE:FILEPATH=`which python` 
 
 make -j
 make install-python
 
-# To compile and build when only using the ace grid computes
+# To compile and build when only using the ace grid computes (or to develop openMPI method for forces)
 
 cmake ../cmake -DLAMMPS_EXCEPTIONS=yes \
                -DBUILD_SHARED_LIBS=yes \
