@@ -74,10 +74,6 @@ void PairDPD::compute(int eflag, int vflag)
   evdwl = 0.0;
   ev_init(eflag,vflag);
 
-  // precompute random force scaling factors
-
-  for (int i = 0; i < 4; ++i) special_sqrt[i] = sqrt(force->special_lj[i]);
-
   double **x = atom->x;
   double **v = atom->v;
   double **f = atom->f;
@@ -227,7 +223,7 @@ void PairDPD::settings(int narg, char **arg)
 void PairDPD::coeff(int narg, char **arg)
 {
   if (narg < 4 || narg > 5)
-    error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+    error->all(FLERR,"Incorrect args for pair coefficients");
   if (!allocated) allocate();
 
   int ilo,ihi,jlo,jhi;
@@ -251,7 +247,7 @@ void PairDPD::coeff(int narg, char **arg)
     }
   }
 
-  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------
@@ -270,6 +266,10 @@ void PairDPD::init_style()
     error->warning(FLERR, "Pair dpd needs newton pair on for momentum conservation");
 
   neighbor->add_request(this);
+
+  // precompute random force scaling factors
+
+  for (int i = 0; i < 4; ++i) special_sqrt[i] = sqrt(force->special_lj[i]);
 }
 
 /* ----------------------------------------------------------------------

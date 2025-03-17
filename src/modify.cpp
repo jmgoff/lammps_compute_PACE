@@ -262,13 +262,11 @@ void Modify::init()
 
   for (i = 0; i < nfix; i++)
     if (!fix[i]->dynamic_group_allow && group->dynamic[fix[i]->igroup])
-      error->all(FLERR, Error::NOLASTLINE, "Fix {} does not allow use with a dynamic group",
-                 fix[i]->style);
+      error->all(FLERR, "Fix {} does not allow use with a dynamic group", fix[i]->style);
 
   for (i = 0; i < ncompute; i++)
     if (!compute[i]->dynamic_group_allow && group->dynamic[compute[i]->igroup])
-      error->all(FLERR, Error::NOLASTLINE, "Compute {} does not allow use with a dynamic group",
-                 compute[i]->style);
+      error->all(FLERR, "Compute {} does not allow use with a dynamic group", compute[i]->style);
 
   // warn if any particle is time integrated more than once
 
@@ -827,22 +825,22 @@ Fix *Modify::add_fix(int narg, char **arg, int trysuffix)
 
   // clang-format off
   const char *exceptions[] =
-    {"GPU", "OMP", "INTEL", "property/atom", "cmap", "cmap3", "rx", "deprecated", "STORE/KIM",
-     "amoeba/pitorsion", "amoeba/bitorsion", "DUMMY", nullptr};
+    {"GPU", "OMP", "INTEL", "property/atom", "cmap", "cmap3", "rx",
+     "deprecated", "STORE/KIM", "amoeba/pitorsion", "amoeba/bitorsion",
+     nullptr};
   // clang-format on
 
   if (domain->box_exist == 0) {
     int m;
     for (m = 0; exceptions[m] != nullptr; m++)
       if (strcmp(arg[2], exceptions[m]) == 0) break;
-    if (exceptions[m] == nullptr)
-      error->all(FLERR, 2, "Fix {} command before simulation box is defined", arg[2]);
+    if (exceptions[m] == nullptr) error->all(FLERR, "Fix command before simulation box is defined");
   }
 
   // check group ID
 
   int igroup = group->find(arg[1]);
-  if (igroup == -1) error->all(FLERR, 1, "Could not find fix group ID {}", arg[1]);
+  if (igroup == -1) error->all(FLERR, "Could not find fix group ID {}", arg[1]);
 
   // if fix ID exists:
   //   set newflag = 0 so create new fix in same location in fix list
@@ -876,7 +874,7 @@ Fix *Modify::add_fix(int narg, char **arg, int trysuffix)
         if (estyle == fix[ifix]->style) match = 1;
       }
     }
-    if (!match) error->all(FLERR, 2, "Replacing a fix, but new style != old style");
+    if (!match) error->all(FLERR, "Replacing a fix, but new style != old style");
 
     if (fix[ifix]->igroup != igroup && comm->me == 0)
       error->warning(FLERR, "Replacing a fix, but new group != old group");
@@ -923,8 +921,7 @@ Fix *Modify::add_fix(int narg, char **arg, int trysuffix)
     fix[ifix] = fix_creator(lmp, narg, arg);
   }
 
-  if (fix[ifix] == nullptr)
-    error->all(FLERR, 2, utils::check_packages_for_style("fix", arg[2], lmp));
+  if (fix[ifix] == nullptr) error->all(FLERR, utils::check_packages_for_style("fix", arg[2], lmp));
 
   // increment nfix and update fix_list vector (if new)
 
@@ -1247,8 +1244,7 @@ Compute *Modify::add_compute(int narg, char **arg, int trysuffix)
 
   // error check
 
-  if (get_compute_by_id(arg[0]))
-    error->all(FLERR, Error::ARGZERO, "Reuse of compute ID '{}'", arg[0]);
+  if (get_compute_by_id(arg[0])) error->all(FLERR, "Reuse of compute ID '{}'", arg[0]);
 
   // extend Compute list if necessary
 

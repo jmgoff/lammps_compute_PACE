@@ -26,7 +26,6 @@ namespace LAMMPS_NS {
 
 class RegBlock : public Region {
   friend class FixPour;
-  friend class Region2VMD;
 
  public:
   RegBlock(class LAMMPS *, int, char **);

@@ -28,7 +28,7 @@
 using namespace LAMMPS_NS;
 
 // Currently the Intel compiler is required for this pair style.
-#if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
+#ifdef __INTEL_COMPILER
 
 #ifdef _LMP_INTEL_OFFLOAD
 #pragma offload_attribute(push,target(mic))

@@ -50,7 +50,6 @@ GranSubModHeatRadius::GranSubModHeatRadius(GranularModel *gm, LAMMPS *lmp) : Gra
   num_coeffs = 1;
   contact_radius_flag = 1;
   conductivity = 0.0;
-  nsvector = 1;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -66,9 +65,7 @@ void GranSubModHeatRadius::coeffs_to_local()
 
 double GranSubModHeatRadius::calculate_heat()
 {
-  double heat = 2 * conductivity * gm->contact_radius * (gm->Tj - gm->Ti);
-  if (gm->calculate_svector) gm->svector[index_svector] = heat;
-  return heat;
+  return 2 * conductivity * gm->contact_radius * (gm->Tj - gm->Ti);
 }
 
 
@@ -81,7 +78,6 @@ GranSubModHeatArea::GranSubModHeatArea(GranularModel *gm, LAMMPS *lmp) : GranSub
   num_coeffs = 1;
   contact_radius_flag = 1;
   heat_transfer_coeff = 0.0;
-  nsvector = 1;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -97,7 +93,5 @@ void GranSubModHeatArea::coeffs_to_local()
 
 double GranSubModHeatArea::calculate_heat()
 {
-  double heat = heat_transfer_coeff * MY_PI * gm->contact_radius * gm->contact_radius * (gm->Tj - gm->Ti);
-  if (gm->calculate_svector) gm->svector[index_svector] = heat;
-  return heat;
+  return heat_transfer_coeff * MY_PI * gm->contact_radius * gm->contact_radius * (gm->Tj - gm->Ti);
 }

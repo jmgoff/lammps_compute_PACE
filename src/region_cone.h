@@ -25,8 +25,6 @@ RegionStyle(cone,RegCone);
 namespace LAMMPS_NS {
 
 class RegCone : public Region {
-  friend class Region2VMD;
-
  public:
   RegCone(class LAMMPS *, int, char **);
   ~RegCone() override;

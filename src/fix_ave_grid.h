@@ -66,7 +66,7 @@ class FixAveGrid : public Fix {
 
   int dimension, triclinic;
 
-  int *which, *argindex, *iarg_orig;
+  int *which, *argindex;
   char **ids;
   int *value2index, *value2grid, *value2data;
 

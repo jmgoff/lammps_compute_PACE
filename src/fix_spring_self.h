@@ -26,7 +26,6 @@ namespace LAMMPS_NS {
 
 class FixSpringSelf : public Fix {
  public:
-  enum { NONE, CONSTANT, EQUAL, ATOM };
   FixSpringSelf(class LAMMPS *, int, char **);
   ~FixSpringSelf() override;
   int setmask() override;
@@ -51,11 +50,8 @@ class FixSpringSelf : public Fix {
  protected:
   double k, espring;
   double **xoriginal;    // original coords of atoms
-  char *kstr;            // name of variable for K
-  double *kval;          // per-atom variable values for K
-  int kvar, kstyle;
   int xflag, yflag, zflag;
-  int ilevel_respa, maxatom;
+  int ilevel_respa;
 };
 
 }    // namespace LAMMPS_NS

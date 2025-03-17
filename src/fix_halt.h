@@ -35,7 +35,7 @@ class FixHalt : public Fix {
   void post_run() override;
 
  private:
-  int attribute, operation, eflag, msgflag, ivar, uflag;
+  int attribute, operation, eflag, msgflag, ivar;
   bigint nextstep, thisstep;
   double value, tratio;
   char *idvar;

@@ -137,7 +137,7 @@ void PairMEAM::compute(int eflag, int vflag)
   comm->reverse_comm(this);
   meam_inst->meam_dens_final(nlocal, eflag_either, eflag_global, eflag_atom, &eng_vdwl, eatom,
                              ntype, type, map, scale, errorflag);
-  if (errorflag) error->one(FLERR, Error::NOLASTLINE, "MEAM library error {}", errorflag);
+  if (errorflag) error->one(FLERR, "MEAM library error {}", errorflag);
 
   comm->forward_comm(this);
 
@@ -201,17 +201,16 @@ void PairMEAM::coeff(int narg, char **arg)
 
   if (!allocated) allocate();
 
-  if (narg < 6)
-    utils::missing_cmd_args(FLERR, fmt::format("pair style {} coefficients", myname), error);
+  if (narg < 6) error->all(FLERR, "Incorrect args for pair style {} coefficients", myname);
 
-// check for presence of first meam file
+  // check for presence of first meam file
 
   std::string lib_file = utils::get_potential_file_path(arg[2]);
   if (lib_file.empty()) {
     if (msmeamflag)
-      error->all(FLERR, 2, "Cannot open MS-MEAM library file {}", lib_file);
+      error->all(FLERR, "Cannot open MS-MEAM library file {}", lib_file);
     else
-      error->all(FLERR, 2, "Cannot open MEAM library file {}", lib_file);
+      error->all(FLERR, "Cannot open MEAM library file {}", lib_file);
   }
 
   // find meam parameter file in arguments:
@@ -234,13 +233,12 @@ void PairMEAM::coeff(int narg, char **arg)
   }
   if (paridx < 0) {
     if (msmeamflag)
-      error->all(FLERR, Error::NOPOINTER, "No MS-MEAM parameter file in pair coefficients" + utils::errorurl(21));
+      error->all(FLERR, "No MS-MEAM parameter file in pair coefficients");
     else
-      error->all(FLERR, Error::NOPOINTER, "No MEAM parameter file in pair coefficients" + utils::errorurl(21));
+      error->all(FLERR, "No MEAM parameter file in pair coefficients");
   }
   if ((narg - paridx - 1) != atom->ntypes)
-    error->all(FLERR, Error::NOPOINTER, "Expected {} but found {} args for pair style {} "
-               "coefficients", 1 + paridx + atom->ntypes, narg, myname);
+    error->all(FLERR, "Incorrect args for pair style {} coefficients", myname);
 
   // MEAM element names between 2 filenames
   // nlibelements = # of MEAM elements
@@ -252,7 +250,7 @@ void PairMEAM::coeff(int narg, char **arg)
   }
 
   nlibelements = paridx - 3;
-  if (nlibelements < 1) error->all(FLERR, "Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (nlibelements < 1) error->all(FLERR, "Incorrect args for pair coefficients");
   if (nlibelements > MAXELT)
     error->all(FLERR,
                "Too many elements extracted from MEAM library (current limit: {}). "
@@ -262,7 +260,9 @@ void PairMEAM::coeff(int narg, char **arg)
     if (std::any_of(libelements.begin(), libelements.end(), [&](const std::string &elem) {
           return elem == arg[i + 3];
         }))
-      error->all(FLERR, i + 3, "Must not extract the same element from MEAM library twice");
+      error->all(FLERR, "Must not extract the same element ({}) from MEAM library twice. ",
+                 arg[i + 3]);
+
     libelements.emplace_back(arg[i + 3]);
     mass.push_back(0.0);
   }
@@ -271,7 +271,7 @@ void PairMEAM::coeff(int narg, char **arg)
   // pass all parameters to MEAM package
   // tell MEAM package that setup is done
 
-  read_files(lib_file, par_file, 3 + nlibelements);
+  read_files(lib_file, par_file);
   meam_inst->meam_setup_done(&cutmax);
 
   // read args that map atom types to MEAM elements
@@ -287,7 +287,7 @@ void PairMEAM::coeff(int narg, char **arg)
     else if (strcmp(arg[i], "NULL") == 0)
       map[m] = -1;
     else
-      error->all(FLERR, i, "Incorrect element mapping for pair style {} coefficients", myname);
+      error->all(FLERR, "Incorrect args for pair style {} coefficients", myname);
   }
 
   // clear setflag since coeff() called once with I,J = * *
@@ -311,9 +311,7 @@ void PairMEAM::coeff(int narg, char **arg)
     }
   }
 
-  if (count == 0)
-    error->all(FLERR, Error::NOPOINTER, "Incorrect element map for pair style {} coefficients",
-               myname);
+  if (count == 0) error->all(FLERR, "Incorrect args for pair style {} coefficients", myname);
 }
 
 /* ----------------------------------------------------------------------
@@ -322,8 +320,7 @@ void PairMEAM::coeff(int narg, char **arg)
 
 void PairMEAM::init_style()
 {
-  if (force->newton_pair == 0)
-    error->all(FLERR, Error::NOLASTLINE, "Pair style {} requires newton pair on", myname);
+  if (force->newton_pair == 0) error->all(FLERR, "Pair style {} requires newton pair on", myname);
 
   // need a full and a half neighbor list
 
@@ -357,10 +354,10 @@ double PairMEAM::init_one(int i, int j)
 
 /* ---------------------------------------------------------------------- */
 
-void PairMEAM::read_files(const std::string &globalfile, const std::string &userfile, int uidx)
+void PairMEAM::read_files(const std::string &globalfile, const std::string &userfile)
 {
   read_global_meam_file(globalfile);
-  read_user_meam_file(userfile, uidx);
+  read_user_meam_file(userfile);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -434,7 +431,7 @@ void PairMEAM::read_global_meam_file(const std::string &globalfile)
         std::string lattice_type = values.next_string();
 
         if (!MEAM::str_to_lat(lattice_type, true, lat[index]))
-          error->one(FLERR, 4, "Unrecognized lattice type in MEAM library file: {}", lattice_type);
+          error->one(FLERR, "Unrecognized lattice type in MEAM library file: {}", lattice_type);
 
         // store parameters
 
@@ -467,15 +464,15 @@ void PairMEAM::read_global_meam_file(const std::string &globalfile)
         ibar[index] = values.next_int();
 
         if (!isone(t0[index]))
-          error->one(FLERR, 4, "Unsupported parameter in MEAM library file: t0 != 1");
+          error->one(FLERR, "Unsupported parameter in MEAM library file: t0 != 1");
 
         // z given is ignored: if this is mismatched, we definitely won't do what the user said -> fatal error
         if (z[index] != MEAM::get_Zij(lat[index]))
-          error->one(FLERR, 4, "Mismatched parameter in MEAM library file: z != lat");
+          error->one(FLERR, "Mismatched parameter in MEAM library file: z != lat");
 
         nset++;
       } catch (TokenizerException &e) {
-        error->one(FLERR, 4, e.what());
+        error->one(FLERR, e.what());
       }
     }
 
@@ -488,7 +485,7 @@ void PairMEAM::read_global_meam_file(const std::string &globalfile)
           msg += " ";
           msg += libelements[i];
         }
-      error->one(FLERR, 4, msg);
+      error->one(FLERR, msg);
     }
   }
 
@@ -542,7 +539,7 @@ void PairMEAM::read_global_meam_file(const std::string &globalfile)
 
 /* ---------------------------------------------------------------------- */
 
-void PairMEAM::read_user_meam_file(const std::string &userfile, int uidx)
+void PairMEAM::read_user_meam_file(const std::string &userfile)
 {
   // done if user param file is "NULL"
 
@@ -587,15 +584,14 @@ void PairMEAM::read_user_meam_file(const std::string &userfile, int uidx)
     for (which = 0; which < nkeywords; which++)
       if (keyword == keywords[which]) break;
     if (which == nkeywords)
-      error->all(FLERR, uidx, "Keyword {} in MEAM parameter file {}:{} not recognized", keyword,
+      error->all(FLERR, "Keyword {} in MEAM parameter file {}:{} not recognized", keyword,
                  userfile, lineno);
 
     try {
       nindex = nparams - 2;
       for (int i = 0; i < nindex; i++) index[i] = values.next_int() - 1;
     } catch (std::exception &e) {
-      error->all(FLERR, uidx, "Error parsing MEAM parameter file {}:{}: {}", userfile, lineno,
-                 e.what());
+      error->all(FLERR, "Error parsing MEAM parameter file {}:{}: {}", userfile, lineno, e.what());
     }
 
     // map lattce_meam value to an integer
@@ -603,14 +599,14 @@ void PairMEAM::read_user_meam_file(const std::string &userfile, int uidx)
       std::string lattice_type = values.next_string();
       lattice_t latt;
       if (!MEAM::str_to_lat(lattice_type, false, latt))
-        error->all(FLERR, uidx, "Unrecognized lattice type {} in MEAM parameter file {}:{}",
+        error->all(FLERR, "Unrecognized lattice type {} in MEAM parameter file {}:{}",
                    lattice_type, userfile, lineno);
       value = latt;
     } else {
       try {
         value = values.next_double();
       } catch (std::exception &e) {
-        error->all(FLERR, uidx, "Error parsing MEAM parameter file {}:{}: {}", userfile, lineno,
+        error->all(FLERR, "Error parsing MEAM parameter file {}:{}: {}", userfile, lineno,
                    e.what());
       }
     }
@@ -623,7 +619,7 @@ void PairMEAM::read_user_meam_file(const std::string &userfile, int uidx)
       const char *descr[] = {"has an unknown error", "is out of range (please report a bug)",
                              "expected more indices", "has out of range element index"};
       if ((errorflag < 0) || (errorflag > 3)) errorflag = 0;
-      error->all(FLERR, uidx, "Error in MEAM parameter file {}:{}: keyword {} {}", userfile, lineno,
+      error->all(FLERR, "Error in MEAM parameter file {}:{}: keyword {} {}", userfile, lineno,
                  keyword, descr[errorflag]);
     }
   }

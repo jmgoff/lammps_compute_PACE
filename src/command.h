@@ -20,12 +20,8 @@ namespace LAMMPS_NS {
 
 class Command : protected Pointers {
  public:
-  Command(class LAMMPS *lmp) : Pointers(lmp), copymode(0) {};
+  Command(class LAMMPS *lmp) : Pointers(lmp) {};
   virtual void command(int, char **) = 0;
-
- protected:
-  int copymode;    // if set, do not deallocate during destruction
-                   // required when classes are used as functors by Kokkos
 };
 
 }    // namespace LAMMPS_NS

@@ -114,11 +114,9 @@ FixVector::FixVector(LAMMPS *lmp, int narg, char **arg) :
         error->all(FLERR, "Fix for fix {} vector not computed at compatible time", val.id);
 
       if (val.argindex == 0)
-        value = ifix->extscalar;
-      else if (ifix->extvector >= 0)
         value = ifix->extvector;
       else
-        value = ifix->extlist[val.argindex - 1];
+        value = ifix->extarray;
       val.val.f = ifix;
 
     } else if (val.which == ArgInfo::VARIABLE) {

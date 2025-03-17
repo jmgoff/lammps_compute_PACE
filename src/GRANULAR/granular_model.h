@@ -71,11 +71,8 @@ class GranularModel : protected Pointers {
   GranSubMod *sub_models[NSUBMODELS];
 
   // Extra options
-  int beyond_contact, limit_damping, history_update, synchronized_verlet;
+  int beyond_contact, limit_damping, history_update;
   ContactType contact_type;
-
-  // Particle identifiers
-  int i, j, itype, jtype;
 
   // History variables
   int size_history, nondefault_history_transfer;
@@ -91,14 +88,10 @@ class GranularModel : protected Pointers {
   double *xi, *xj, *vi, *vj, *omegai, *omegaj;
   double fs[3], fr[3], ft[3];
 
-  double dx[3], nx[3], nx_unrotated[3], r, rsq, rinv, Reff, radsum, delta, dR;
+  double dx[3], nx[3], r, rsq, rinv, Reff, radsum, delta, dR;
   double vr[3], vn[3], vnnr, vt[3], wr[3], vtr[3], vrl[3], relrot[3], vrel;
   double magtwist;
   bool touch;
-
-  // Extra output
-  int calculate_svector, nsvector;
-  double *svector;
 
  protected:
   int rolling_defined, twisting_defined, heat_defined; // Flag optional sub models

@@ -73,7 +73,6 @@ Dump::Dump(LAMMPS *lmp, int /*narg*/, char **arg) :
 
   clearstep = 0;
   sort_flag = 0;
-  sortcol = 0;
   balance_flag = 0;
   append_flag = 0;
   buffer_allow = 0;
@@ -409,9 +408,9 @@ void Dump::write()
     int nlocal = atom->nlocal;
     if (nlocal > maxpbc) pbc_allocate();
     if (nlocal) {
-      memcpy(&xpbc[0][0],&atom->x[0][0],(sizeof(double)*3*nlocal)&MEMCPYMASK);
-      memcpy(&vpbc[0][0],&atom->v[0][0],(sizeof(double)*3*nlocal)&MEMCPYMASK);
-      memcpy(imagepbc,atom->image,(nlocal*sizeof(imageint))&MEMCPYMASK);
+      memcpy(&xpbc[0][0],&atom->x[0][0],3*nlocal*sizeof(double));
+      memcpy(&vpbc[0][0],&atom->v[0][0],3*nlocal*sizeof(double));
+      memcpy(imagepbc,atom->image,nlocal*sizeof(imageint));
     }
     xhold = atom->x;
     vhold = atom->v;

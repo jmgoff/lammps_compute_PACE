@@ -20,6 +20,7 @@
 
 #ifdef __INTEL_LLVM_COMPILER
 #define USE_OMP_SIMD
+#define __INTEL_COMPILER __INTEL_LLVM_COMPILER
 #define __INTEL_COMPILER_BUILD_DATE __INTEL_LLVM_COMPILER
 // Indicate to vectorizer that it is safe to use dword indexed gather
 #define IP_PRE_dword_index(i) ((i) & NEIGHMASK)
@@ -27,7 +28,7 @@
 #define IP_PRE_dword_index(i) i
 #endif
 
-#if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
+#ifdef __INTEL_COMPILER
 #define LMP_SIMD_COMPILER
 #if (__INTEL_COMPILER_BUILD_DATE > 20160720)
 #define LMP_INTEL_USE_SIMDOFF
@@ -86,7 +87,7 @@ enum {TIME_PACK, TIME_HOST_NEIGHBOR, TIME_HOST_PAIR, TIME_OFFLOAD_NEIGHBOR,
 #define INTEL_P3M_MAXORDER 8
 #define INTEL_P3M_ALIGNED_MAXORDER 8
 
-#if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
+#ifdef __INTEL_COMPILER
 #ifdef __AVX__
 #undef INTEL_VECTOR_WIDTH
 #define INTEL_VECTOR_WIDTH 8

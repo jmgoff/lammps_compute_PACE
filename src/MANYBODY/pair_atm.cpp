@@ -222,7 +222,7 @@ void PairATM::settings(int narg, char **arg)
 
 void PairATM::coeff(int narg, char **arg)
 {
-  if (narg != 4) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (narg != 4) error->all(FLERR,"Incorrect args for pair coefficients");
   if (!allocated) allocate();
 
   int ilo,ihi,jlo,jhi,klo,khi;
@@ -259,7 +259,7 @@ void PairATM::coeff(int narg, char **arg)
     }
   }
 
-  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------

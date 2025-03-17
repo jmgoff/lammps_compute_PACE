@@ -382,12 +382,12 @@ void PairLocalDensity::coeff(int narg, char **arg)
   int i, j;
   if (!allocated) allocate();
 
-  if (narg != 3) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (narg != 3) error->all(FLERR,"Incorrect args for pair coefficients");
 
   // ensure I,J args are * *
 
   if (strcmp(arg[0],"*") != 0 || strcmp(arg[1],"*") != 0)
-    error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+    error->all(FLERR,"Incorrect args for pair coefficients");
 
   // parse LD file
 
@@ -409,7 +409,7 @@ void PairLocalDensity::coeff(int narg, char **arg)
         count++;
       }
     }
-  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------

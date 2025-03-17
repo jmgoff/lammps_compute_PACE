@@ -398,27 +398,27 @@ int BodyRoundedPolygon::write_data_body(FILE *fp, double *buf)
 
   // atomID ninteger ndouble
 
-  utils::print(fp,"{} {} {}\n",ubuf(buf[m]).i,ubuf(buf[m+1]).i,ubuf(buf[m+2]).i);
+  fmt::print(fp,"{} {} {}\n",ubuf(buf[m]).i,ubuf(buf[m+1]).i,ubuf(buf[m+2]).i);
   m += 3;
 
   const int nsub = (int) ubuf(buf[m++]).i;
-  utils::print(fp,"{}\n",nsub);
+  fmt::print(fp,"{}\n",nsub);
 
   // inertia
 
-  utils::print(fp,"{} {} {} {} {} {}\n",
+  fmt::print(fp,"{} {} {} {} {} {}\n",
              buf[m+0],buf[m+1],buf[m+2],buf[m+3],buf[m+4],buf[m+5]);
   m += 6;
 
   // nsub vertices
 
   for (int i = 0; i < nsub; i++, m+=3)
-    utils::print(fp,"{} {} {}\n",buf[m],buf[m+1],buf[m+2]);
+    fmt::print(fp,"{} {} {}\n",buf[m],buf[m+1],buf[m+2]);
 
   // rounded diameter
 
   double diameter = buf[m++];
-  utils::print(fp,"{}\n",diameter);
+  fmt::print(fp,"{}\n",diameter);
 
   return m;
 }

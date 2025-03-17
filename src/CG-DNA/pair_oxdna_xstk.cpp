@@ -633,7 +633,7 @@ void PairOxdnaXstk::coeff(int narg, char **arg)
 {
   int count;
 
-  if (narg != 3 && narg != 25) error->all(FLERR,"Incorrect args for pair coefficients in oxdna/xstk" + utils::errorurl(21));
+  if (narg != 3 && narg != 25) error->all(FLERR,"Incorrect args for pair coefficients in oxdna/xstk");
   if (!allocated) allocate();
 
   int ilo,ihi,jlo,jhi;
@@ -865,7 +865,7 @@ void PairOxdnaXstk::coeff(int narg, char **arg)
     }
   }
 
-  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients in oxdna/xstk" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients in oxdna/xstk");
 
 }
 

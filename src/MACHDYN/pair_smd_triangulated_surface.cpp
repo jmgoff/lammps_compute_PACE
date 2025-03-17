@@ -335,7 +335,7 @@ void PairTriSurf::settings(int narg, char **arg) {
 
 void PairTriSurf::coeff(int narg, char **arg) {
         if (narg != 3)
-                error->all(FLERR, "Incorrect args for pair coefficients" + utils::errorurl(21));
+                error->all(FLERR, "Incorrect args for pair coefficients");
         if (!allocated)
                 allocate();
 
@@ -364,7 +364,7 @@ void PairTriSurf::coeff(int narg, char **arg) {
         }
 
         if (count == 0)
-                error->all(FLERR, "Incorrect args for pair coefficients" + utils::errorurl(21));
+                error->all(FLERR, "Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------

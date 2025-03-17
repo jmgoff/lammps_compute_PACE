@@ -161,7 +161,8 @@ void DumpXYZ::write_header(bigint n)
 
     auto header = fmt::format("{}\n Atoms. Timestep: {}", n, update->ntimestep);
     if (time_flag) header += fmt::format(" Time: {:.6f}", compute_time());
-    utils::print(fp, header + "\n");
+    header += "\n";
+    fmt::print(fp, header);
   }
 }
 

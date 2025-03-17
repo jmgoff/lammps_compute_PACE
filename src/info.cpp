@@ -269,28 +269,27 @@ void Info::command(int narg, char **arg)
   if (out == nullptr) return;
 
   fputs("\nInfo-Info-Info-Info-Info-Info-Info-Info-Info-Info-Info\n",out);
-  std::tm now = fmt::localtime(std::time(nullptr));
-  utils::print(out,"Printed on {}", std::asctime(&now));
+  std::time_t now = std::time(nullptr);
+  fmt::print(out,"Printed on {:%a %b %d %H:%M:%S %Y}\n", fmt::localtime(now));
 
   if (flags & CONFIG) {
-    utils::print(out,"\nLAMMPS version: {} / {}\n", lmp->version, lmp->num_ver);
+    fmt::print(out,"\nLAMMPS version: {} / {}\n", lmp->version, lmp->num_ver);
 
     if (LAMMPS::has_git_info())
-      utils::print(out,"Git info: {} / {} / {}\n",
+      fmt::print(out,"Git info: {} / {} / {}\n",
                  LAMMPS::git_branch(), LAMMPS::git_descriptor(),LAMMPS::git_commit());
 
-    utils::print(out,"\nOS information: {}\n\n",platform::os_info());
+    fmt::print(out,"\nOS information: {}\n\n",platform::os_info());
 
-    utils::print(out,"sizeof(smallint): {}-bit\n"
+    fmt::print(out,"sizeof(smallint): {}-bit\n"
                "sizeof(imageint): {}-bit\n"
                "sizeof(tagint):   {}-bit\n"
                "sizeof(bigint):   {}-bit\n",
                sizeof(smallint)*8, sizeof(imageint)*8,
                sizeof(tagint)*8, sizeof(bigint)*8);
 
-    utils::print(out,"\nCompiler: {} with {}\nC++ standard: {}\n",
+    fmt::print(out,"\nCompiler: {} with {}\nC++ standard: {}\n",
                platform::compiler_info(),platform::openmp_standard(),platform::cxx_standard());
-    fputs(get_fmt_info().c_str(), out);
 
     fputs("\nActive compile time flags:\n\n",out);
     if (has_gzip_support()) fputs("-DLAMMPS_GZIP\n",out);
@@ -307,7 +306,7 @@ void Info::command(int narg, char **arg)
 #else // defined(LAMMPS_SMALLSMALL)
     fputs("-DLAMMPS_SMALLSMALL\n",out);
 #endif
-    if (has_gzip_support()) utils::print(out,"\n{}\n",platform::compress_info());
+    if (has_gzip_support()) fmt::print(out,"\n{}\n",platform::compress_info());
 
     int ncword, ncline = 0;
     fputs("\nInstalled packages:\n\n",out);
@@ -317,17 +316,17 @@ void Info::command(int narg, char **arg)
         ncline = 0;
         fputs("\n",out);
       }
-      utils::print(out,"{} ",*pkg);
+      fmt::print(out,"{} ",*pkg);
       ncline += ncword + 1;
     }
     fputs("\n",out);
   }
 
   if (flags & ACCELERATOR) {
-    utils::print(out,"\nAccelerator configuration:\n\n{}",
+    fmt::print(out,"\nAccelerator configuration:\n\n{}",
                get_accelerator_info());
     if (Info::has_gpu_device())
-      utils::print(out,"\nAvailable GPU devices:\n{}\n",get_gpu_device_info());
+      fmt::print(out,"\nAvailable GPU devices:\n{}\n",get_gpu_device_info());
   }
 
   if (flags & MEMORY) {
@@ -336,18 +335,18 @@ void Info::command(int narg, char **arg)
     get_memory_info(meminfo);
 
     fputs("\nMemory allocation information (MPI rank 0):\n\n",out);
-    utils::print(out,"Total dynamically allocated memory: {:.4} Mbyte\n",
+    fmt::print(out,"Total dynamically allocated memory: {:.4} Mbyte\n",
                meminfo[0]);
 
 #if defined(_WIN32)
-    utils::print(out,"Non-shared memory use: {:.4} Mbyte\n",meminfo[1]);
-    utils::print(out,"Maximum working set size: {:.4} Mbyte\n",meminfo[2]);
+    fmt::print(out,"Non-shared memory use: {:.4} Mbyte\n",meminfo[1]);
+    fmt::print(out,"Maximum working set size: {:.4} Mbyte\n",meminfo[2]);
 #else
 #if defined(__linux__)
-    utils::print(out,"Current reserved memory pool size: {:.4} Mbyte\n",
+    fmt::print(out,"Current reserved memory pool size: {:.4} Mbyte\n",
                meminfo[1]);
 #endif
-    utils::print(out,"Maximum resident set size: {:.4} Mbyte\n",meminfo[2]);
+    fmt::print(out,"Maximum resident set size: {:.4} Mbyte\n",meminfo[2]);
 #endif
   }
 
@@ -355,18 +354,18 @@ void Info::command(int narg, char **arg)
     int major,minor;
     std::string version = platform::mpi_info(major,minor);
 
-    utils::print(out,"\nCommunication information:\n"
+    fmt::print(out,"\nCommunication information:\n"
                "MPI library level: MPI v{}.{}\n"
                "MPI version: {}\n",major,minor,version);
 
-    utils::print(out,"Comm style = {},  Comm layout = {}\n"
+    fmt::print(out,"Comm style = {},  Comm layout = {}\n"
                "Communicate velocities for ghost atoms = {}\n",
                commstyles[comm->style], commlayout[comm->layout],
                comm->ghost_velocity ? "yes" : "no");
 
     if (domain->box_exist) {
       if (comm->mode == 0)
-        utils::print(out,"Communication mode = single\n"
+        fmt::print(out,"Communication mode = single\n"
                    "Communication cutoff = {}\n",
                    comm->get_comm_cutoff());
 
@@ -381,7 +380,7 @@ void Info::command(int narg, char **arg)
           }
 
           if (comm->cutusermulti) cut = MAX(cut,comm->cutusermulti[i]);
-          utils::print(out,"Communication cutoff for collection {} = {:.8}\n", i, cut);
+          fmt::print(out,"Communication cutoff for collection {} = {:.8}\n", i, cut);
         }
       }
 
@@ -391,13 +390,13 @@ void Info::command(int narg, char **arg)
         for (int i=1; i <= atom->ntypes && neighbor->cuttype; ++i) {
           cut = neighbor->cuttype[i];
           if (comm->cutusermultiold) cut = MAX(cut,comm->cutusermultiold[i]);
-          utils::print(out,"Communication cutoff for type {} = {:.8}\n", i, cut);
+          fmt::print(out,"Communication cutoff for type {} = {:.8}\n", i, cut);
         }
       }
     }
-    utils::print(out,"Nprocs = {},   Nthreads = {}\n",comm->nprocs,comm->nthreads);
+    fmt::print(out,"Nprocs = {},   Nthreads = {}\n",comm->nprocs,comm->nthreads);
     if (domain->box_exist)
-      utils::print(out,"Processor grid = {} x {} x {}\n",comm->procgrid[0],
+      fmt::print(out,"Processor grid = {} x {} x {}\n",comm->procgrid[0],
                  comm->procgrid[1], comm->procgrid[2]);
   }
 
@@ -408,80 +407,80 @@ void Info::command(int narg, char **arg)
 
   if (flags & SYSTEM) {
     fputs("\nSystem information:\n",out);
-    utils::print(out,"Units         = {}\n", update->unit_style);
-    utils::print(out,"Atom style    = {}\n", atom->get_style());
-    utils::print(out,"Atom map      = {}\n", mapstyles[atom->map_style]);
+    fmt::print(out,"Units         = {}\n", update->unit_style);
+    fmt::print(out,"Atom style    = {}\n", atom->get_style());
+    fmt::print(out,"Atom map      = {}\n", mapstyles[atom->map_style]);
     if (atom->molecular != Atom::ATOMIC) {
       const char *msg;
       msg = (atom->molecular == Atom::TEMPLATE) ? "template" : "standard";
-      utils::print(out,"Molecule type = {}\n",msg);
+      fmt::print(out,"Molecule type = {}\n",msg);
     }
-    utils::print(out,"Atoms     = {:12},  types = {:8d},  style = {}\n",
+    fmt::print(out,"Atoms     = {:12},  types = {:8d},  style = {}\n",
                atom->natoms, atom->ntypes, force->pair_style);
 
-    if (atom->tag_enable) utils::print(out,"Atoms with atom IDs\n");
-    if (atom->molecule) utils::print(out,"Atoms with molecule IDs\n");
-    if (atom->mass) utils::print(out,"Atoms with per-type masses\n");
-    if (atom->rmass) utils::print(out,"Atoms with per-atom masses\n");
-    if (atom->q) utils::print(out,"Atoms with per-atom charges\n");
+    if (atom->tag_enable) fmt::print(out,"Atoms with atom IDs\n");
+    if (atom->molecule) fmt::print(out,"Atoms with molecule IDs\n");
+    if (atom->mass) fmt::print(out,"Atoms with per-type masses\n");
+    if (atom->rmass) fmt::print(out,"Atoms with per-atom masses\n");
+    if (atom->q) fmt::print(out,"Atoms with per-atom charges\n");
 
     if (force->pair && utils::strmatch(force->pair_style,"^hybrid")) {
       auto hybrid = dynamic_cast<PairHybrid *>(force->pair);
-      utils::print(out,"Hybrid sub-styles:");
+      fmt::print(out,"Hybrid sub-styles:");
       for (int i=0; i < hybrid->nstyles; ++i)
-        utils::print(out," {}", hybrid->keywords[i]);
+        fmt::print(out," {}", hybrid->keywords[i]);
       fputc('\n',out);
     }
     if (atom->molecular != Atom::ATOMIC) {
       const char *msg;
       msg = force->bond_style ? force->bond_style : "none";
-      utils::print(out,"Bonds     = {:12},  types = {:8},  style = {}\n",
+      fmt::print(out,"Bonds     = {:12},  types = {:8},  style = {}\n",
                  atom->nbonds, atom->nbondtypes, msg);
 
       msg = force->angle_style ? force->angle_style : "none";
-      utils::print(out,"Angles    = {:12},  types = {:8},  style = {}\n",
+      fmt::print(out,"Angles    = {:12},  types = {:8},  style = {}\n",
                  atom->nangles, atom->nangletypes, msg);
 
       msg = force->dihedral_style ? force->dihedral_style : "none";
-      utils::print(out,"Dihedrals = {:12},  types = {:8},  style = {}\n",
+      fmt::print(out,"Dihedrals = {:12},  types = {:8},  style = {}\n",
                  atom->ndihedrals, atom->ndihedraltypes, msg);
 
       msg = force->improper_style ? force->improper_style : "none";
-      utils::print(out,"Impropers = {:12},  types = {:8},  style = {}\n",
+      fmt::print(out,"Impropers = {:12},  types = {:8},  style = {}\n",
                  atom->nimpropers, atom->nimpropertypes, msg);
 
       const double * const special_lj   = force->special_lj;
       const double * const special_coul = force->special_coul;
 
-      utils::print(out,"Special bond factors lj =    {:<8} {:<8} {:<8}\n"
+      fmt::print(out,"Special bond factors lj =    {:<8} {:<8} {:<8}\n"
                  "Special bond factors coul =  {:<8} {:<8} {:<8}\n",
                  special_lj[1],special_lj[2],special_lj[3],
                  special_coul[1],special_coul[2],special_coul[3]);
     }
 
-    utils::print(out,"Kspace style = {}\n",
+    fmt::print(out,"Kspace style = {}\n",
                force->kspace ? force->kspace_style : "none");
 
     if (domain->box_exist) {
-      utils::print(out,"\nDimensions = {}\n",domain->dimension);
-      utils::print(out,"{} box = {:.8} x {:.8} x {:.8}\n",
+      fmt::print(out,"\nDimensions = {}\n",domain->dimension);
+      fmt::print(out,"{} box = {:.8} x {:.8} x {:.8}\n",
                  domain->triclinic ? "Triclinic" : "Orthogonal",
                  domain->xprd, domain->yprd, domain->zprd);
-      utils::print(out,"Boundaries = {},{} {},{} {},{}\n",
+      fmt::print(out,"Boundaries = {},{} {},{} {},{}\n",
                  bstyles[domain->boundary[0][0]],bstyles[domain->boundary[0][1]],
                  bstyles[domain->boundary[1][0]],bstyles[domain->boundary[1][1]],
                  bstyles[domain->boundary[2][0]],bstyles[domain->boundary[2][1]]);
-      utils::print(out,"xlo, xhi = {:.8}, {:.8}\n", domain->boxlo[0], domain->boxhi[0]);
-      utils::print(out,"ylo, yhi = {:.8}, {:.8}\n", domain->boxlo[1], domain->boxhi[1]);
-      utils::print(out,"zlo, zhi = {:.8}, {:.8}\n", domain->boxlo[2], domain->boxhi[2]);
+      fmt::print(out,"xlo, xhi = {:.8}, {:.8}\n", domain->boxlo[0], domain->boxhi[0]);
+      fmt::print(out,"ylo, yhi = {:.8}, {:.8}\n", domain->boxlo[1], domain->boxhi[1]);
+      fmt::print(out,"zlo, zhi = {:.8}, {:.8}\n", domain->boxlo[2], domain->boxhi[2]);
       if (domain->triclinic)
-        utils::print(out,"Xy, xz, yz = {:.8}, {:.8}, {:.8}\n",
+        fmt::print(out,"Xy, xz, yz = {:.8}, {:.8}, {:.8}\n",
                    domain->xy, domain->xz, domain->yz);
     } else {
       fputs("\nBox has not yet been created\n",out);
     }
-    utils::print(out,"\nCurrent timestep number = {}\n", update->ntimestep);
-    utils::print(out,"Current timestep size = {}\n", update->dt);
+    fmt::print(out,"\nCurrent timestep number = {}\n", update->ntimestep);
+    fmt::print(out,"Current timestep size = {}\n", update->dt);
   }
 
   if (domain->box_exist && (flags & COEFFS)) {
@@ -492,7 +491,7 @@ void Info::command(int narg, char **arg)
       fputs("\nPair Coeffs:\n",out);
       for (int i=1; i <= atom->ntypes; ++i)
         for (int j=i; j <= atom->ntypes; ++j) {
-          utils::print(out,"{:6d} {:6d}:",i,j);
+          fmt::print(out,"{:6d} {:6d}:",i,j);
           if (pair->allocated && pair->setflag[i][j]) fputs(" is set\n",out);
           else fputs(" is not set\n",out);
         }
@@ -503,7 +502,7 @@ void Info::command(int narg, char **arg)
       if (bond) {
         fputs("\nBond Coeffs:\n",out);
         for (int i=1; i <= atom->nbondtypes; ++i) {
-          utils::print(out,"{:6d}:",i);
+          fmt::print(out,"{:6d}:",i);
           if (bond->allocated && bond->setflag[i]) fputs(" is set\n",out);
           else fputs (" is not set\n",out);
         }
@@ -515,7 +514,7 @@ void Info::command(int narg, char **arg)
       if (angle) {
         fputs("\nAngle Coeffs:\n",out);
         for (int i=1; i <= atom->nangletypes; ++i) {
-          utils::print(out,"{:6d}:",i);
+          fmt::print(out,"{:6d}:",i);
           if (angle->allocated && angle->setflag[i]) fputs(" is set\n",out);
           else fputs (" is not set\n",out);
         }
@@ -527,7 +526,7 @@ void Info::command(int narg, char **arg)
       if (dihedral) {
         fputs("\nDihedral Coeffs:\n",out);
         for (int i=1; i <= atom->ndihedraltypes; ++i) {
-          utils::print(out,"{:6d}:",i);
+          fmt::print(out,"{:6d}:",i);
           if (dihedral->allocated && dihedral->setflag[i]) fputs(" is set\n",out);
           else fputs (" is not set\n",out);
         }
@@ -539,7 +538,7 @@ void Info::command(int narg, char **arg)
       if (b) {
         fputs("\nImproper Coeffs:\n",out);
         for (int i=1; i <= atom->nimpropertypes; ++i) {
-          utils::print(out,"{:6d}:",i);
+          fmt::print(out,"{:6d}:",i);
           if (b->allocated && b->setflag[i]) fputs(" is set\n",out);
           else fputs (" is not set\n",out);
         }
@@ -554,7 +553,7 @@ void Info::command(int narg, char **arg)
     fputs("\nGroup information:\n",out);
     for (int i=0; i < ngroup; ++i) {
       if (names[i])
-        utils::print(out,"Group[{:2d}]:     {:16} ({})\n",
+        fmt::print(out,"Group[{:2d}]:     {:16} ({})\n",
                    i, names[i], dynamic[i] ? "dynamic" : "static");
     }
   }
@@ -563,11 +562,11 @@ void Info::command(int narg, char **arg)
     fputs("\nRegion information:\n",out);
     int i=0;
     for (auto &reg : domain->get_region_list()) {
-      utils::print(out,"Region[{:3d}]:  {:16}  style = {:16}  side = {}\n",
+      fmt::print(out,"Region[{:3d}]:  {:16}  style = {:16}  side = {}\n",
                  i, std::string(reg->id)+',', std::string(reg->style)+',',
                  reg->interior ? "in" : "out");
       if (reg->bboxflag)
-        utils::print(out,"   Boundary:  lo {:.8} {:.8} {:.8}  hi {:.8} {:.8} {:.8}\n",
+        fmt::print(out,"   Boundary:  lo {:.8} {:.8} {:.8}  hi {:.8} {:.8} {:.8}\n",
                    reg->extent_xlo, reg->extent_ylo,
                    reg->extent_zlo, reg->extent_xhi,
                    reg->extent_yhi, reg->extent_zhi);
@@ -580,7 +579,7 @@ void Info::command(int narg, char **arg)
     char **names = group->names;
     fputs("\nCompute information:\n",out);
     for (const auto &compute : modify->get_compute_list())
-      utils::print(out,"Compute[{:3d}]:  {:16}  style = {:16}  group = {}\n", i++,
+      fmt::print(out,"Compute[{:3d}]:  {:16}  style = {:16}  group = {}\n", i++,
                  std::string(compute->id)+',',std::string(compute->style)+',',
                  names[compute->igroup]);
   }
@@ -593,13 +592,13 @@ void Info::command(int narg, char **arg)
     char **names = group->names;
     fputs("\nDump information:\n",out);
     for (int i=0; i < ndump; ++i) {
-      utils::print(out,"Dump[{:3d}]:     {:16}  file = {:16}  style = {:16}  group = {:16}  ",
+      fmt::print(out,"Dump[{:3d}]:     {:16}  file = {:16}  style = {:16}  group = {:16}  ",
                  i, std::string(dump[i]->id)+',',std::string(dump[i]->filename)+',',
                  std::string(dump[i]->style)+',',std::string(names[dump[i]->igroup])+',');
       if (nevery[i]) {
-        utils::print(out,"every = {}\n", nevery[i]);
+        fmt::print(out,"every = {}\n", nevery[i]);
       } else {
-        utils::print(out,"every = {}\n", vnames[i]);
+        fmt::print(out,"every = {}\n", vnames[i]);
       }
     }
   }
@@ -609,7 +608,7 @@ void Info::command(int narg, char **arg)
     char **names = group->names;
     fputs("\nFix information:\n",out);
     for (const auto &fix : modify->get_fix_list())
-      utils::print(out, "Fix[{:3d}]:      {:16}  style = {:16}  group = {}\n",i++,
+      fmt::print(out, "Fix[{:3d}]:      {:16}  style = {:16}  group = {}\n",i++,
                  std::string(fix->id)+',',std::string(fix->style)+',',names[fix->igroup]);
   }
 
@@ -618,7 +617,7 @@ void Info::command(int narg, char **arg)
     fputs("\nVariable information:\n",out);
     for (int i=0; i < nvar; ++i) {
       auto vinfo = get_variable_info(i);
-      utils::print(out, get_variable_info(i));
+      fmt::print(out, get_variable_info(i));
     }
   }
 
@@ -635,7 +634,7 @@ void Info::command(int narg, char **arg)
     wallclock = (wallclock - walls) / 60.0;
     wallm = fmod(wallclock,60.0);
     wallh = (wallclock - wallm) / 60.0;
-    utils::print(out,"\nTotal time information (MPI rank 0):\n"
+    fmt::print(out,"\nTotal time information (MPI rank 0):\n"
                "  CPU time: {:4d}:{:02d}:{:02d}\n"
                " Wall time: {:4d}:{:02d}:{:02d}\n",
                cpuh,cpum,cpus,wallh,wallm,walls);
@@ -1358,18 +1357,6 @@ std::string Info::get_fft_info()
 #endif
 #endif
   return fft_info;
-}
-
-/* ---------------------------------------------------------------------- */
-
-static constexpr int fmt_ver_major = FMT_VERSION / 10000;
-static constexpr int fmt_ver_minor = (FMT_VERSION % 10000) / 100;
-static constexpr int fmt_ver_patch = FMT_VERSION % 100;
-
-std::string Info::get_fmt_info()
-{
-  return fmt::format("Embedded fmt library version: {}.{}.{}\n",
-                     fmt_ver_major, fmt_ver_minor, fmt_ver_patch);
 }
 
 /* ---------------------------------------------------------------------- */

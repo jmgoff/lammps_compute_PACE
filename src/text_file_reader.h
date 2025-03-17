@@ -26,7 +26,6 @@
 
 namespace LAMMPS_NS {
 class TextFileReader {
- private:
   std::string filetype;
   bool closefp;
   int bufsize;

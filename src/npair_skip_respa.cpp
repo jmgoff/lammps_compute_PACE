@@ -36,7 +36,7 @@ NPairSkipRespaTemp<TRIM>::NPairSkipRespaTemp(LAMMPS *lmp) : NPair(lmp) {}
 template<int TRIM>
 void NPairSkipRespaTemp<TRIM>::build(NeighList *list)
 {
-  int i, j, ii, jj, n, itype, jtype, jnum, joriginal, n_inner, n_middle;
+  int i, j, ii, jj, n, itype, jnum, joriginal, n_inner, n_middle;
   int *neighptr, *jlist, *neighptr_inner, *neighptr_middle;
 
   int *type = atom->type;
@@ -117,8 +117,7 @@ void NPairSkipRespaTemp<TRIM>::build(NeighList *list)
     for (jj = 0; jj < jnum; jj++) {
       joriginal = jlist[jj];
       j = joriginal & NEIGHMASK;
-      jtype = type[j];
-      if (!molskip && ijskip[itype][jtype]) continue;
+      if (!molskip && ijskip[itype][type[j]]) continue;
       if ((molskip == NeighRequest::INTRA) && (molecule[i] != molecule[j])) continue;
       if ((molskip == NeighRequest::INTER) && (molecule[i] == molecule[j])) continue;
 
@@ -127,9 +126,7 @@ void NPairSkipRespaTemp<TRIM>::build(NeighList *list)
         dely = ytmp - x[j][1];
         delz = ztmp - x[j][2];
         rsq = delx * delx + dely * dely + delz * delz;
-
-        double cutsq_trim = (cutsq_custom > 0.0) ? cutsq_custom : cutneighsq[itype][jtype];
-        if (rsq > cutsq_trim) continue;
+        if (rsq > cutsq_custom) continue;
       }
 
       neighptr[n++] = joriginal;
@@ -143,8 +140,7 @@ void NPairSkipRespaTemp<TRIM>::build(NeighList *list)
     for (jj = 0; jj < jnum; jj++) {
       joriginal = jlist[jj];
       j = joriginal & NEIGHMASK;
-      jtype = type[j];
-      if (!molskip && ijskip[itype][jtype]) continue;
+      if (!molskip && ijskip[itype][type[j]]) continue;
       if ((molskip == NeighRequest::INTRA) && (molecule[i] != molecule[j])) continue;
       if ((molskip == NeighRequest::INTER) && (molecule[i] == molecule[j])) continue;
 
@@ -153,9 +149,7 @@ void NPairSkipRespaTemp<TRIM>::build(NeighList *list)
         dely = ytmp - x[j][1];
         delz = ztmp - x[j][2];
         rsq = delx * delx + dely * dely + delz * delz;
-
-        double cutsq_trim = (cutsq_custom > 0.0) ? cutsq_custom : cut_inner_sq;
-        if (rsq > cutsq_trim) continue;
+        if (rsq > cutsq_custom) continue;
       }
 
       neighptr_inner[n_inner++] = joriginal;
@@ -170,8 +164,7 @@ void NPairSkipRespaTemp<TRIM>::build(NeighList *list)
       for (jj = 0; jj < jnum; jj++) {
         joriginal = jlist[jj];
         j = joriginal & NEIGHMASK;
-        jtype = type[j];
-        if (!molskip && ijskip[itype][jtype]) continue;
+        if (!molskip && ijskip[itype][type[j]]) continue;
         if ((molskip == NeighRequest::INTRA) && (molecule[i] != molecule[j])) continue;
         if ((molskip == NeighRequest::INTER) && (molecule[i] == molecule[j])) continue;
 
@@ -180,9 +173,7 @@ void NPairSkipRespaTemp<TRIM>::build(NeighList *list)
           dely = ytmp - x[j][1];
           delz = ztmp - x[j][2];
           rsq = delx * delx + dely * dely + delz * delz;
-
-          double cutsq_trim = (cutsq_custom > 0.0) ? cutsq_custom : cut_middle_sq;
-          if (rsq > cutsq_trim) continue;
+          if (rsq > cutsq_custom) continue;
         }
 
         neighptr_middle[n_middle++] = joriginal;

@@ -1146,8 +1146,7 @@ void PPPMKokkos<DeviceType>::particle_map()
 
   k_flag.template modify<DeviceType>();
   k_flag.template sync<LMPHostType>();
-  if (k_flag.h_view())
-    error->one(FLERR,"Out of range atoms - cannot compute PPPM" + utils::errorurl(4));
+  if (k_flag.h_view()) error->one(FLERR,"Out of range atoms - cannot compute PPPM");
 }
 
 template<class DeviceType>

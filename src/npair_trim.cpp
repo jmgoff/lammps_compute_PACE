@@ -34,13 +34,12 @@ void NPairTrim::build(NeighList *list)
 
   double cutsq_custom = cutoff_custom * cutoff_custom;
 
-  int ii, jj, n, jnum, joriginal, itype, jtype;
+  int ii, jj, n, jnum, joriginal;
   int *neighptr, *jlist;
   double xtmp, ytmp, ztmp;
   double delx, dely, delz, rsq;
 
   double **x = atom->x;
-  int *type = atom->type;
 
   int *ilist = list->ilist;
   int *numneigh = list->numneigh;
@@ -65,7 +64,6 @@ void NPairTrim::build(NeighList *list)
     neighptr = ipage->vget();
 
     const int i = ilist_copy[ii];
-    itype = type[i];
     ilist[ii] = i;
     xtmp = x[i][0];
     ytmp = x[i][1];
@@ -79,15 +77,13 @@ void NPairTrim::build(NeighList *list)
     for (jj = 0; jj < jnum; jj++) {
       joriginal = jlist[jj];
       const int j = joriginal & NEIGHMASK;
-      jtype = type[j];
 
       delx = xtmp - x[j][0];
       dely = ytmp - x[j][1];
       delz = ztmp - x[j][2];
       rsq = delx * delx + dely * dely + delz * delz;
 
-      double cutsq_trim = (cutsq_custom > 0.0) ? cutsq_custom : cutneighsq[itype][jtype];
-      if (rsq > cutsq_trim) continue;
+      if (rsq > cutsq_custom) continue;
 
       neighptr[n++] = joriginal;
     }

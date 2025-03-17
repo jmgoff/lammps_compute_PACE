@@ -407,7 +407,7 @@ void DihedralLepton::coeff(int narg, char **arg)
     count++;
   }
 
-  if (count == 0) error->all(FLERR, "Incorrect args for dihedral coefficients" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR, "Incorrect args for dihedral coefficients");
 }
 
 /* ----------------------------------------------------------------------

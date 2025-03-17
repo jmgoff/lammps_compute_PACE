@@ -348,20 +348,12 @@ void FixBoxRelax::init()
   // set temperature and pressure ptrs
 
   temperature = modify->get_compute_by_id(id_temp);
-  if (!temperature) {
-    error->all(FLERR,"Temperature compute ID {} for fix {} does not exist", id_temp, style);
-  } else {
-    if (temperature->tempflag == 0)
-      error->all(FLERR, "Compute ID {} for fix {} does not compute a temperature", id_temp, style);
-  }
+  if (!temperature)
+    error->all(FLERR,"Temperature compute ID {} for fix box/relax does not exist", id_temp);
 
   pressure = modify->get_compute_by_id(id_press);
-  if (!pressure) {
-    error->all(FLERR,"Pressure compute ID {} for fix {} does not exist", id_press, style);
-  } else {
-    if (pressure->pressflag == 0)
-      error->all(FLERR,"Compute ID {} for fix {} does not compute pressure", id_press, style);
-  }
+  if (!pressure)
+    error->all(FLERR,"Pressure compute ID {} for fix box/relax does not exist", id_press);
 
   pv2e = 1.0 / force->nktv2p;
 
@@ -700,7 +692,7 @@ void FixBoxRelax::couple()
   }
 
   if (!std::isfinite(p_current[0]) || !std::isfinite(p_current[1]) || !std::isfinite(p_current[2]))
-    error->all(FLERR,"Non-numeric pressure - simulation unstable" + utils::errorurl(7));
+    error->all(FLERR,"Non-numeric pressure - simulation unstable");
 
   // switch order from xy-xz-yz to Voigt ordering
 
@@ -710,7 +702,7 @@ void FixBoxRelax::couple()
     p_current[5] = tensor[3];
 
     if (!std::isfinite(p_current[3]) || !std::isfinite(p_current[4]) || !std::isfinite(p_current[5]))
-      error->all(FLERR,"Non-numeric pressure - simulation unstable" + utils::errorurl(7));
+      error->all(FLERR,"Non-numeric pressure - simulation unstable");
   }
 }
 

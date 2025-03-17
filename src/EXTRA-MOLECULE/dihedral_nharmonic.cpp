@@ -257,11 +257,11 @@ void DihedralNHarmonic::allocate()
 
 void DihedralNHarmonic::coeff(int narg, char **arg)
 {
-  if (narg < 3) error->all(FLERR,"Incorrect args for dihedral coefficients" + utils::errorurl(21));
+  if (narg < 3) error->all(FLERR,"Incorrect args for dihedral coefficients");
 
   int n = utils::inumeric(FLERR,arg[1],false,lmp);
   if (narg != n + 2)
-    error->all(FLERR,"Incorrect args for dihedral coefficients" + utils::errorurl(21));
+    error->all(FLERR,"Incorrect args for dihedral coefficients");
 
   if (!allocated) allocate();
 
@@ -280,7 +280,7 @@ void DihedralNHarmonic::coeff(int narg, char **arg)
     count++;
   }
 
-  if (count == 0) error->all(FLERR,"Incorrect args for dihedral coefficients" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR,"Incorrect args for dihedral coefficients");
 }
 
 /* ----------------------------------------------------------------------

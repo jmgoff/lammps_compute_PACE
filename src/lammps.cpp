@@ -105,7 +105,7 @@ using namespace LAMMPS_NS;
  *
  * The LAMMPS class manages the components of an MD simulation by creating,
  * deleting, and initializing instances of the classes it is composed of,
- * processing command-line flags, and providing access to some global properties.
+ * processing command line flags, and providing access to some global properties.
  * The specifics of setting up and running a simulation are handled by the
  * individual component class instances. */
 
@@ -562,10 +562,14 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
       else if (strcmp(arg[inflag], "none") == 0) infile = stdin;
       else infile = fopen(arg[inflag],"r");
       if (infile == nullptr)
-        error->all(FLERR,"Cannot open input script {}: {}", arg[inflag], utils::getsyserror());
+        error->one(FLERR,"Cannot open input script {}: {}", arg[inflag], utils::getsyserror());
       if (!helpflag)
         utils::logmesg(this,"LAMMPS ({}{})\n", version, update_string);
 
+     // warn against using I/O redirection in parallel runs
+      if ((inflag == 0) && (universe->nprocs > 1))
+        error->warning(FLERR, "Using I/O redirection is unreliable with parallel runs. "
+                       "Better to use the -in switch to read input files.");
       utils::flush_buffers(this);
     }
 
@@ -645,24 +649,18 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
     }
 
     // screen and logfile messages for universe and world
-    std::string update_string = UPDATE_STRING;
-    if (has_git_info() && ((update_string == " - Development")
-                           || (update_string == " - Maintenance")))
-      update_string += fmt::format(" - {}", git_descriptor());
 
     if ((universe->me == 0) && (!helpflag)) {
-
-      constexpr char fmt[] = "LAMMPS ({}{})\nRunning on {} partitions of processors\n";
+      const char fmt[] = "LAMMPS ({})\nRunning on {} partitions of processors\n";
       if (universe->uscreen)
-        utils::print(universe->uscreen, fmt, version, update_string, universe->nworlds);
+        fmt::print(universe->uscreen,fmt,version,universe->nworlds);
 
       if (universe->ulogfile)
-        utils::print(universe->ulogfile, fmt, version, update_string, universe->nworlds);
+        fmt::print(universe->ulogfile,fmt,version,universe->nworlds);
     }
 
     if ((me == 0) && (!helpflag))
-      utils::logmesg(this,"LAMMPS ({}{})\nProcessor partition = {}\n", version,
-                     update_string, universe->iworld);
+      utils::logmesg(this,"LAMMPS ({})\nProcessor partition = {}\n", version, universe->iworld);
   }
 
   // check consistency of datatype settings in lmptype.h
@@ -874,9 +872,7 @@ void LAMMPS::create()
   else
     atom->create_avec("atomic",0,nullptr,1);
 
-  if (kokkos) group = new GroupKokkos(this);
-  else group = new Group(this);
-
+  group = new Group(this);
   force = new Force(this);    // must be after group, to create temperature
 
   if (kokkos) modify = new ModifyKokkos(this);
@@ -1226,7 +1222,7 @@ const char *LAMMPS::non_pair_suffix() const
 }
 
 /* ----------------------------------------------------------------------
-   help message for command-line options and styles present in executable
+   help message for command line options and styles present in executable
 ------------------------------------------------------------------------- */
 
 void _noopt LAMMPS::help()
@@ -1237,7 +1233,7 @@ void _noopt LAMMPS::help()
   // if output is a console, use a pipe to a pager for paged output.
   // this will avoid the most important help text to rush past the
   // user. scrollback buffers are often not large enough. this is most
-  // beneficial to windows users, who are not used to command-line.
+  // beneficial to windows users, who are not used to command line.
 
   int use_pager = platform::is_console(fp);
 
@@ -1259,7 +1255,7 @@ void _noopt LAMMPS::help()
     }
   }
 
-  // general help message about command-line and flags
+  // general help message about command line and flags
 
   if (has_git_info()) {
     fprintf(fp,"\nLarge-scale Atomic/Molecular Massively Parallel Simulator - "
@@ -1270,7 +1266,7 @@ void _noopt LAMMPS::help()
   }
   fprintf(fp,
           "Usage example: %s -var t 300 -echo screen -in in.alloy\n\n"
-          "List of command-line options supported by this LAMMPS executable:\n\n"
+          "List of command line options supported by this LAMMPS executable:\n\n"
           "-echo none/screen/log/both  : echoing of input script (-e)\n"
           "-help                       : print this help message (-h)\n"
           "-in none/filename           : read input from file or stdin (default) (-i)\n"
@@ -1456,21 +1452,20 @@ void LAMMPS::print_config(FILE *fp)
   const char *pkg;
   int ncword, ncline = 0;
 
-  utils::print(fp,"OS: {}\n\n",platform::os_info());
+  fmt::print(fp,"OS: {}\n\n",platform::os_info());
 
-  utils::print(fp,"Compiler: {} with {}\nC++ standard: {}\n",
+  fmt::print(fp,"Compiler: {} with {}\nC++ standard: {}\n",
              platform::compiler_info(),platform::openmp_standard(),
              platform::cxx_standard());
-  fputs(Info::get_fmt_info().c_str(),fp);
 
   int major,minor;
   std::string infobuf = platform::mpi_info(major,minor);
-  utils::print(fp,"\nMPI v{}.{}: {}\n\n",major,minor,infobuf);
+  fmt::print(fp,"MPI v{}.{}: {}\n\n",major,minor,infobuf);
 
-  utils::print(fp,"Accelerator configuration:\n\n{}\n",
+  fmt::print(fp,"Accelerator configuration:\n\n{}\n",
              Info::get_accelerator_info());
 #if defined(LMP_GPU)
-  utils::print(fp,"Compatible GPU present: {}\n\n",Info::has_gpu_device() ? "yes" : "no");
+  fmt::print(fp,"Compatible GPU present: {}\n\n",Info::has_gpu_device() ? "yes" : "no");
 #endif
 
   fputs("FFT information:\n\n",fp);
@@ -1491,14 +1486,14 @@ void LAMMPS::print_config(FILE *fp)
   fputs("-DLAMMPS_SMALLSMALL\n",fp);
 #endif
 
-  utils::print(fp,"sizeof(smallint): {}-bit\n"
+  fmt::print(fp,"sizeof(smallint): {}-bit\n"
              "sizeof(imageint): {}-bit\n"
              "sizeof(tagint):   {}-bit\n"
              "sizeof(bigint):   {}-bit\n",
              sizeof(smallint)*8, sizeof(imageint)*8,
              sizeof(tagint)*8, sizeof(bigint)*8);
 
-  if (Info::has_gzip_support()) utils::print(fp,"\n{}\n",platform::compress_info());
+  if (Info::has_gzip_support()) fmt::print(fp,"\n{}\n",platform::compress_info());
 
   fputs("\nInstalled packages:\n\n",fp);
   for (int i = 0; nullptr != (pkg = installed_packages[i]); ++i) {

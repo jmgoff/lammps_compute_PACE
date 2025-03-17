@@ -125,8 +125,6 @@ Respa::Respa(LAMMPS *lmp, int narg, char **arg) :
       nhybrid_styles = hybrid->nstyles;
       // each hybrid sub-style needs to be assigned to a respa level
       if (iarg + nhybrid_styles > narg) error->all(FLERR, "Illegal run_style respa command");
-      delete[] hybrid_level;
-      delete[] hybrid_compute;
       hybrid_level = new int[nhybrid_styles];
       hybrid_compute = new int[nhybrid_styles];
       for (int i = 0; i < nhybrid_styles; ++i) {

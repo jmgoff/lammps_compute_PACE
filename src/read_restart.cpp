@@ -441,8 +441,7 @@ void ReadRestart::command(int narg, char **arg)
     utils::logmesg(lmp,"  {} atoms\n",natoms);
 
   if (natoms != atom->natoms)
-    error->all(FLERR, Error::NOLASTLINE, "Did not assign all restart atoms correctly"
-               +utils::errorurl(16));
+    error->all(FLERR,"Did not assign all restart atoms correctly");
 
   if ((atom->molecular == Atom::TEMPLATE) && (me == 0)) {
     std::string mesg;
@@ -789,7 +788,6 @@ void ReadRestart::header()
     } else if (flag == TRICLINIC_GENERAL) {
       domain->triclinic_general = read_int();
     } else if (flag == ROTATE_G2R) {
-      read_int();
       read_double_vec(9,&domain->rotate_g2r[0][0]);
       MathExtra::transpose3(domain->rotate_g2r,domain->rotate_r2g);
 

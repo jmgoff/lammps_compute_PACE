@@ -20,7 +20,6 @@
 #include "force.h"
 #include "memory.h"
 #include "neighbor.h"
-#include "safe_pointers.h"
 #include "suffix.h"
 #include "update.h"
 
@@ -366,7 +365,7 @@ void Bond::write_file(int narg, char **arg)
   // add line with DATE: and UNITS: tag when creating new file
   // print header in format used by bond_style table
 
-  SafeFilePtr fp;
+  FILE *fp = nullptr;
   if (comm->me == 0) {
     std::string table_file = arg[4];
 
@@ -389,7 +388,7 @@ void Bond::write_file(int narg, char **arg)
                      utils::current_date());
       fp = fopen(table_file.c_str(), "w");
       if (fp)
-        utils::print(fp, "# DATE: {} UNITS: {} Created by bond_write\n", utils::current_date(),
+        fmt::print(fp, "# DATE: {} UNITS: {} Created by bond_write\n", utils::current_date(),
                    update->unit_style);
     }
     if (fp == nullptr)
@@ -420,6 +419,7 @@ void Bond::write_file(int narg, char **arg)
       e = single(btype, r * r, itype, jtype, f);
       fprintf(fp, "%8d %- 22.15g %- 22.15g %- 22.15g\n", i + 1, r, e, f * r);
     }
+    fclose(fp);
   }
 }
 

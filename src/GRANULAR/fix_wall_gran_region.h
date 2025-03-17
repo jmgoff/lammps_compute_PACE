@@ -44,8 +44,9 @@ class FixWallGranRegion : public FixWallGran {
   int size_restart(int) override;
   int maxsize_restart() override;
 
+ private:
   class Region *region;
-  void update_contacts(int, int);
+  int nregion;
 
   // shear history for multiple contacts per particle
 
@@ -56,11 +57,10 @@ class FixWallGranRegion : public FixWallGran {
   int *c2r;                  // contact to region mapping
                              // c2r[i] = index of Ith contact in
                              //   region-contact[] list of contacts
- private:
-
-  int nregion;
   int motion_resetflag;      // used by restart to indicate that region
                              //    vel info is to be reset
+
+  void update_contacts(int, int);
 };
 
 }    // namespace LAMMPS_NS

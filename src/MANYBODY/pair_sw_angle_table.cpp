@@ -402,18 +402,14 @@ void PairSWAngleTable::threebody_table(Param *paramij, Param *paramik, ParamTabl
 
   rinv12 = 1.0/(r1*r2);
   cs = (delr1[0]*delr2[0] + delr1[1]*delr2[1] + delr1[2]*delr2[2]) * rinv12;
-  cs = MAX(-1.0,MIN(cs,1.0));
+
+  var = acos(cs);
 
   // look up energy (f(theta), ftheta) and force (df(theta)/dtheta, fprimetheta) at
   // angle theta (var) in angle table belonging to parameter set paramijk
-
-  var = acos(cs);
   uf_lookup(table_paramijk, var, ftheta, fprimetheta);
 
-  if ((cs*cs - 1.0) != 0.0)
-    acosprime = 1.0 / (sqrt(1 - cs*cs ) );
-  else
-    acosprime = 0.0;
+  acosprime = 1.0 / (sqrt(1 - cs*cs ) );
 
   facradtable = facexp*ftheta;
   frad1table = facradtable*gsrainvsq1;
@@ -728,7 +724,7 @@ double PairSWAngleTable::splint(double *xa, double *ya, double *y2a, int n, doub
 
 void PairSWAngleTable::uf_lookup(ParamTable *pm, double x, double &u, double &f)
 {
-  if (!std::isfinite(x)) error->one(FLERR, "Illegal angle in pair style sw/angle/table");
+  if (!std::isfinite(x)) { error->one(FLERR, "Illegal angle in angle style table"); }
 
   double fraction,a,b;
 

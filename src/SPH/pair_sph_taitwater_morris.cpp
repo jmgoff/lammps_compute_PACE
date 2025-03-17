@@ -226,7 +226,7 @@ void PairSPHTaitwaterMorris::coeff(int narg, char **arg)
 {
   if (narg != 6)
     error->all(FLERR,
-        "Incorrect args for pair_style sph/taitwater/morris coefficients" + utils::errorurl(21));
+        "Incorrect args for pair_style sph/taitwater/morris coefficients");
   if (!allocated)
     allocate();
 
@@ -255,7 +255,7 @@ void PairSPHTaitwaterMorris::coeff(int narg, char **arg)
   }
 
   if (count == 0)
-    error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+    error->all(FLERR,"Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------

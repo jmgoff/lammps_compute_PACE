@@ -218,7 +218,7 @@ void PairSPHRhoSum::settings(int narg, char **arg)
 void PairSPHRhoSum::coeff(int narg, char **arg)
 {
   if (narg != 3)
-    error->all(FLERR,"Incorrect number of args for sph/rhosum coefficients" + utils::errorurl(21));
+    error->all(FLERR,"Incorrect number of args for sph/rhosum coefficients");
   if (!allocated)
     allocate();
 
@@ -238,7 +238,7 @@ void PairSPHRhoSum::coeff(int narg, char **arg)
   }
 
   if (count == 0)
-    error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+    error->all(FLERR,"Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------

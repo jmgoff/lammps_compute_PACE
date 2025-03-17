@@ -48,7 +48,7 @@ void NPairFullBinGhostIntel::build(NeighList *list)
   #endif
 
   if (nstencil > INTEL_MAX_STENCIL_CHECK)
-    error->all(FLERR, "Too many neighbor bins for INTEL package" + utils::errorurl(9));
+    error->all(FLERR, "Too many neighbor bins for INTEL package.");
 
   #ifdef _LMP_INTEL_OFFLOAD
   if (exclude)

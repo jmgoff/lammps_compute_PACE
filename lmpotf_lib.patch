@@ -1,0 +1,19 @@
+diff --git a/src/library.cpp b/src/library.cpp
+index cdc0a81..2d75d49 100644
+--- a/src/library.cpp
++++ b/src/library.cpp
+@@ -482,10 +482,10 @@ char *lammps_command(void *handle, const char *cmd)
+ 
+   BEGIN_CAPTURE
+   {
+-    if (lmp->update->whichflag != 0)
+-      lmp->error->all(FLERR,"Library error: issuing LAMMPS commands "
+-                      "during a run is not allowed.");
+-    else
++    //if (lmp->update->whichflag != 0)
++    //  lmp->error->all(FLERR,"Library error: issuing LAMMPS commands "
++    //                  "during a run is not allowed.");
++    //else
+       result = lmp->input->one(cmd);
+   }
+   END_CAPTURE

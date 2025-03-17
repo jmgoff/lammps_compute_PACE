@@ -87,10 +87,11 @@ namespace Granular_NS {
 
   /* ---------------------------------------------------------------------- */
 
-  class GranSubModDampingCoeffRestitution : public GranSubModDampingTsuji {
+  class GranSubModDampingCoeffRestitution : public GranSubModDamping {
    public:
     GranSubModDampingCoeffRestitution(class GranularModel *, class LAMMPS *);
     void init() override;
+    double calculate_forces() override;
   };
 
   /* ---------------------------------------------------------------------- */

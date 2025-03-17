@@ -177,7 +177,7 @@ void PairBornGauss::settings(int narg, char **arg)
 
 void PairBornGauss::coeff(int narg, char **arg)
 {
-  if (narg < 7 || narg > 8) error->all(FLERR, "Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (narg < 7 || narg > 8) error->all(FLERR, "Incorrect args for pair coefficients");
   if (!allocated) allocate();
 
   int ilo, ihi, jlo, jhi;
@@ -206,7 +206,7 @@ void PairBornGauss::coeff(int narg, char **arg)
     }
   }
 
-  if (count == 0) error->all(FLERR, "Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR, "Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------

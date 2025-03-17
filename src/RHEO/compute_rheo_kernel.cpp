@@ -90,6 +90,7 @@ ComputeRHEOKernel::ComputeRHEOKernel(LAMMPS *lmp, int narg, char **arg) :
     comm_forward = ncor * Mdim;
   }
 
+  comm_forward_save = comm_forward;
   corrections_calculated = 0;
   lapack_error_flag = 0;
 }
@@ -135,9 +136,6 @@ void ComputeRHEOKernel::init()
       pre_wp = pre_w * cutinv;
     }
   }
-
-  if (correction_order != -1)
-    fix_rheo->coordination_flag = 1;
 
   nmax_store = atom->nmax;
   memory->create(coordination, nmax_store, "rheo:coordination");
@@ -188,26 +186,27 @@ double ComputeRHEOKernel::calc_w_self()
 
 double ComputeRHEOKernel::calc_w(int i, int j, double delx, double dely, double delz, double r)
 {
-  if (kernel_style == WENDLANDC4)
-    return calc_w_wendlandc4(r);
-  if (kernel_style == QUINTIC)
-    return calc_w_quintic(r);
-
   double w = 0.0;
-  int corrections_i = check_corrections(i);
-  int corrections_j = check_corrections(j);
-  int corrections = corrections_i && corrections_j;
+  int corrections_i, corrections_j, corrections;
+
+  if (kernel_style == WENDLANDC4) return calc_w_wendlandc4(r);
+
+  if (kernel_style != QUINTIC) {
+    corrections_i = check_corrections(i);
+    corrections_j = check_corrections(j);
+    corrections = corrections_i & corrections_j;
+  } else {
+    corrections = 0;
+  }
 
   if (!corrections)
-    return calc_w_quintic(r);
-
-  double dx[3] = {delx, dely, delz};
-  if (kernel_style == RK0)
+    w = calc_w_quintic(r);
+  else if (kernel_style == RK0)
     w = calc_w_rk0(i, j, r);
   else if (kernel_style == RK1)
-    w = calc_w_rk1(i, j, dx, r);
+    w = calc_w_rk1(i, j, delx, dely, delz, r);
   else if (kernel_style == RK2)
-    w = calc_w_rk2(i, j, dx, r);
+    w = calc_w_rk2(i, j, delx, dely, delz, r);
 
   return w;
 }
@@ -216,27 +215,26 @@ double ComputeRHEOKernel::calc_w(int i, int j, double delx, double dely, double 
 
 double ComputeRHEOKernel::calc_dw(int i, int j, double delx, double dely, double delz, double r)
 {
-  if (kernel_style == WENDLANDC4)
-    return calc_dw_wendlandc4(delx, dely, delz, r, dWij, dWji);
-  if (kernel_style == QUINTIC)
-    return calc_dw_quintic(delx, dely, delz, r, dWij, dWji);
-
   double wp;
-  int corrections_i = check_corrections(i);
-  int corrections_j = check_corrections(j);
+  int corrections_i, corrections_j;
 
-  wp = calc_dw_scalar_quintic(delx, dely, delz, r);
+  if (kernel_style == WENDLANDC4) return calc_dw_wendlandc4(delx, dely, delz, r, dWij, dWji);
+
+  if (kernel_style != QUINTIC) {
+    corrections_i = check_corrections(i);
+    corrections_j = check_corrections(j);
+  }
+
+  // Calc wp and default dW's, a bit inefficient but can redo later
+  wp = calc_dw_quintic(delx, dely, delz, r, dWij, dWji);
 
   // Overwrite if there are corrections
-  double dxij[3] = {delx, dely, delz};
-  double dxji[3] = {-delx, -dely, -delz};
-
   if (kernel_style == RK1) {
-    if (corrections_i) calc_dw_rk1(i, dxij, r, dWij);
-    if (corrections_j) calc_dw_rk1(j, dxji, r, dWji);
+    if (corrections_i) calc_dw_rk1(i, delx, dely, delz, r, dWij);
+    if (corrections_j) calc_dw_rk1(j, -delx, -dely, -delz, r, dWji);
   } else if (kernel_style == RK2) {
-    if (corrections_i) calc_dw_rk2(i, dxij, r, dWij);
-    if (corrections_j) calc_dw_rk2(j, dxji, r, dWji);
+    if (corrections_i) calc_dw_rk2(i, delx, dely, delz, r, dWij);
+    if (corrections_j) calc_dw_rk2(j, -delx, -dely, -delz, r, dWji);
   }
 
   return wp;
@@ -277,9 +275,10 @@ double ComputeRHEOKernel::calc_w_quintic(double r)
 
 /* ---------------------------------------------------------------------- */
 
-double ComputeRHEOKernel::calc_dw_scalar_quintic(double delx, double dely, double delz, double r)
+double ComputeRHEOKernel::calc_dw_quintic(double delx, double dely, double delz, double r,
+                                          double *dW1, double *dW2)
 {
-  double wp, tmp1, tmp2, tmp3, tmp1sq, tmp2sq, tmp3sq, s;
+  double wp, tmp1, tmp2, tmp3, tmp1sq, tmp2sq, tmp3sq, s, wprinv;
 
   s = r * 3.0 * cutinv;
 
@@ -301,23 +300,14 @@ double ComputeRHEOKernel::calc_dw_scalar_quintic(double delx, double dely, doubl
   }
 
   wp *= pre_wp;
-
-  return wp;
-}
-
-/* ---------------------------------------------------------------------- */
-
-double ComputeRHEOKernel::calc_dw_quintic(double delx, double dely, double delz, double r,
-                                          double *dW1, double *dW2)
-{
-  double wp = calc_dw_scalar_quintic(delx, dely, delz, r);
-  double wprinv = wp / r;
-
+  wprinv = wp / r;
   dW1[0] = delx * wprinv;
   dW1[1] = dely * wprinv;
   dW1[2] = delz * wprinv;
 
-  scale3(-1.0, dW1, dW2);
+  dW2[0] = -delx * wprinv;
+  dW2[1] = -dely * wprinv;
+  dW2[2] = -delz * wprinv;
 
   return wp;
 }
@@ -371,7 +361,9 @@ double ComputeRHEOKernel::calc_dw_wendlandc4(double delx, double dely, double de
   dW1[1] = dely * wprinv;
   dW1[2] = delz * wprinv;
 
-  scale3(-1.0, dW1, dW2);
+  dW2[0] = -delx * wprinv;
+  dW2[1] = -dely * wprinv;
+  dW2[2] = -delz * wprinv;
 
   return wp;
 }
@@ -392,11 +384,14 @@ double ComputeRHEOKernel::calc_w_rk0(int i, int j, double r)
 
 /* ---------------------------------------------------------------------- */
 
-double ComputeRHEOKernel::calc_w_rk1(int i, int j, double *dx, double r)
+double ComputeRHEOKernel::calc_w_rk1(int i, int j, double delx, double dely, double delz, double r)
 {
   int b;
-  double w, H[MAX_MDIM];
+  double w, dx[3], H[MAX_MDIM];
 
+  dx[0] = delx;
+  dx[1] = dely;
+  dx[2] = delz;
   w = calc_w_quintic(r);
 
   if (dim == 2) {
@@ -431,11 +426,13 @@ double ComputeRHEOKernel::calc_w_rk1(int i, int j, double *dx, double r)
 
 /* ---------------------------------------------------------------------- */
 
-double ComputeRHEOKernel::calc_w_rk2(int i, int j, double *dx, double r)
+double ComputeRHEOKernel::calc_w_rk2(int i, int j, double delx, double dely, double delz, double r)
 {
   int b;
-  double w, H[MAX_MDIM];
-
+  double w, dx[3], H[MAX_MDIM];
+  dx[0] = delx;
+  dx[1] = dely;
+  dx[2] = delz;
   w = calc_w_quintic(r);
 
   if (dim == 2) {
@@ -479,10 +476,14 @@ double ComputeRHEOKernel::calc_w_rk2(int i, int j, double *dx, double r)
 
 /* ---------------------------------------------------------------------- */
 
-void ComputeRHEOKernel::calc_dw_rk1(int i, double *dx, double r, double *dW)
+void ComputeRHEOKernel::calc_dw_rk1(int i, double delx, double dely, double delz, double r,
+                                    double *dW)
 {
   int a, b;
-  double w, H[MAX_MDIM];
+  double w, dx[3], H[MAX_MDIM];
+  dx[0] = delx;
+  dx[1] = dely;
+  dx[2] = delz;
 
   w = calc_w_quintic(r);
 
@@ -500,8 +501,8 @@ void ComputeRHEOKernel::calc_dw_rk1(int i, double *dx, double r, double *dW)
 
   // dWij[] = dWx dWy (dWz)
   //compute derivative operators
-  zero3(dW);
   for (a = 0; a < dim; a++) {
+    dW[a] = 0.0;
     for (b = 0; b < Mdim; b++) {
       //First derivative kernels
       dW[a] += C[i][1 + a][b] * H[b];    // C columns: 1 x y (z)
@@ -512,10 +513,14 @@ void ComputeRHEOKernel::calc_dw_rk1(int i, double *dx, double r, double *dW)
 
 /* ---------------------------------------------------------------------- */
 
-void ComputeRHEOKernel::calc_dw_rk2(int i, double *dx, double r, double *dW)
+void ComputeRHEOKernel::calc_dw_rk2(int i, double delx, double dely, double delz, double r,
+                                    double *dW)
 {
   int a, b;
-  double w, H[MAX_MDIM];
+  double w, dx[3], H[MAX_MDIM];
+  dx[0] = delx;
+  dx[1] = dely;
+  dx[2] = delz;
 
   w = calc_w_quintic(r);
 
@@ -542,8 +547,8 @@ void ComputeRHEOKernel::calc_dw_rk2(int i, double *dx, double r, double *dW)
 
   // dWij[] = dWx dWy (dWz)
   //compute derivative operators
-  zero3(dW);
   for (a = 0; a < dim; a++) {
+    dW[a] = 0.0;
     for (b = 0; b < Mdim; b++) {
       //First derivative kernels
       dW[a] += C[i][1 + a][b] * H[b];    // C columns: 1 x y (z) xx yy (zz)
@@ -559,7 +564,7 @@ void ComputeRHEOKernel::compute_peratom()
   lapack_error_flag = 0;
   lapack_error_tags.clear();
 
-  if (correction_order == -1) return;
+  if (kernel_style == QUINTIC) return;
   corrections_calculated = 1;
 
   int i, j, ii, jj, inum, jnum, a, b, lapack_error;
@@ -661,7 +666,6 @@ void ComputeRHEOKernel::compute_peratom()
           w = calc_w_quintic(r);
 
           rhoj = rho[j];
-
           if (interface_flag)
             if (status[j] & PHASECHECK) rhoj = compute_interface->correct_rho(j);
 
@@ -777,6 +781,7 @@ void ComputeRHEOKernel::compute_peratom()
 
   // communicate calculated quantities
   comm_stage = 1;
+  comm_forward = comm_forward_save;
   comm->forward_comm(this);
 }
 
@@ -824,7 +829,8 @@ void ComputeRHEOKernel::compute_coordination()
 
   // communicate calculated quantities
   comm_stage = 0;
-  comm->forward_comm(this, 1);
+  comm_forward = 1;
+  comm->forward_comm(this);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -847,9 +853,7 @@ void ComputeRHEOKernel::grow_arrays(int nmax)
 int ComputeRHEOKernel::pack_forward_comm(int n, int *list, double *buf, int /*pbc_flag*/,
                                          int * /*pbc*/)
 {
-  int a, b;
   int m = 0;
-
   for (int i = 0; i < n; i++) {
     int j = list[i];
     if (comm_stage == 0) {
@@ -858,8 +862,8 @@ int ComputeRHEOKernel::pack_forward_comm(int n, int *list, double *buf, int /*pb
       if (kernel_style == RK0) {
         buf[m++] = C0[j];
       } else {
-        for (a = 0; a < ncor; a++)
-          for (b = 0; b < Mdim; b++) buf[m++] = C[j][a][b];
+        for (int a = 0; a < ncor; a++)
+          for (int b = 0; b < Mdim; b++) buf[m++] = C[j][a][b];
       }
     }
   }
@@ -870,10 +874,8 @@ int ComputeRHEOKernel::pack_forward_comm(int n, int *list, double *buf, int /*pb
 
 void ComputeRHEOKernel::unpack_forward_comm(int n, int first, double *buf)
 {
-  int a, b;
   int m = 0;
   int last = first + n;
-
   for (int i = first; i < last; i++) {
     if (comm_stage == 0) {
       coordination[i] = buf[m++];
@@ -881,8 +883,8 @@ void ComputeRHEOKernel::unpack_forward_comm(int n, int first, double *buf)
       if (kernel_style == RK0) {
         C0[i] = buf[m++];
       } else {
-        for (a = 0; a < ncor; a++)
-          for (b = 0; b < Mdim; b++) C[i][a][b] = buf[m++];
+        for (int a = 0; a < ncor; a++)
+          for (int b = 0; b < Mdim; b++) C[i][a][b] = buf[m++];
       }
     }
   }

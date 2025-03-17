@@ -174,9 +174,9 @@ FixChargeRegulation::~FixChargeRegulation() {
     neighbor->exclusion_group_group_delete(exclusion_group, igroupall);
   }
 
-  if (ngroups > 0) {
+  if (groupstrings) {
     for (int i = 0; i < ngroups; ++i) delete[] groupstrings[i];
-    memory->sfree(groupstrings);
+    memory->destroy(groupstrings);
   }
 }
 

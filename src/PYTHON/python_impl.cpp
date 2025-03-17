@@ -361,12 +361,12 @@ void PythonImpl::invoke_function(int ifunc, char *result)
         if (!str)
           error->all(FLERR, "Could not evaluate Python function {} input variable: {}",
                      pfuncs[ifunc].name, pfuncs[ifunc].svalue[i]);
-        pValue = PyUnicode_FromString(str);
+        pValue = PY_STRING_FROM_STRING(str);
       } else {
-        pValue = PyUnicode_FromString(pfuncs[ifunc].svalue[i]);
+        pValue = PY_STRING_FROM_STRING(pfuncs[ifunc].svalue[i]);
       }
     } else if (itype == PTR) {
-      pValue = PyCapsule_New((void *)lmp, nullptr, nullptr);
+      pValue = PY_VOID_POINTER(lmp);
     } else {
       error->all(FLERR, "Unsupported variable type: {}", itype);
     }
@@ -397,7 +397,7 @@ void PythonImpl::invoke_function(int ifunc, char *result)
       auto value = fmt::format("{:.15g}", PyFloat_AsDouble(pValue));
       strncpy(result, value.c_str(), Variable::VALUELENGTH - 1);
     } else if (otype == STRING) {
-      const char *pystr = PyUnicode_AsUTF8(pValue);
+      const char *pystr = PY_STRING_AS_STRING(pValue);
       if (pfuncs[ifunc].longstr)
         strncpy(pfuncs[ifunc].longstr, pystr, pfuncs[ifunc].length_longstr);
       else

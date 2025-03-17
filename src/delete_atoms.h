@@ -30,7 +30,7 @@ class DeleteAtoms : public Command {
   DeleteAtoms(class LAMMPS *);
   void command(int, char **) override;
 
- protected:
+ private:
   int *dlist;
   int allflag, compress_flag, bond_flag, mol_flag;
   std::map<tagint, int> *hash;

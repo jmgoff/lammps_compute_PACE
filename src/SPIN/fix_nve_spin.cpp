@@ -185,7 +185,6 @@ void FixNVESpin::init()
   // init length of vector of ptrs to Pair/Spin styles
 
   if (npairspin > 0) {
-    delete[] spin_pairs;
     spin_pairs = new PairSpin*[npairspin];
   }
 
@@ -232,7 +231,6 @@ void FixNVESpin::init()
   // init length of vector of ptrs to precession/spin styles
 
   if (nprecspin > 0) {
-    delete[] lockprecessionspin;
     lockprecessionspin = new FixPrecessionSpin*[nprecspin];
   }
 
@@ -584,8 +582,7 @@ void FixNVESpin::sectoring()
   }
 
   if (rv == 0.0)
-   error->all(FLERR, Error::NOLASTLINE,
-              "No suitable cutoff found for sectoring operation: rv = {}", rv);
+   error->all(FLERR,"Illegal sectoring operation");
 
   double rax = rsx/rv;
   double ray = rsy/rv;
@@ -601,8 +598,7 @@ void FixNVESpin::sectoring()
   nsectors = sec[0]*sec[1]*sec[2];
 
   if (sector_flag && (nsectors != 8))
-    error->all(FLERR, Error::NOLASTLINE,
-               "Illegal sectoring operation resulting in {} sectors instead of 8", nsectors);
+    error->all(FLERR,"Illegal sectoring operation");
 
   rsec[0] = rsx;
   rsec[1] = rsy;

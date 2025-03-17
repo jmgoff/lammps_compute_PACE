@@ -984,21 +984,16 @@ void CommBrick::borders()
 
 /* ----------------------------------------------------------------------
    forward communication invoked by a Pair
-   size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_forward from Pair
-   size > 0 -> Pair passes max size per atom
-   the latter is only useful if Pair does several comm modes,
-     some are smaller than max stored in its comm_forward
+   nsize used only to set recv buffer limit
 ------------------------------------------------------------------------- */
 
-void CommBrick::forward_comm(Pair *pair, int size)
+void CommBrick::forward_comm(Pair *pair)
 {
-  int iswap,n,nsize;
+  int iswap,n;
   double *buf;
   MPI_Request request;
 
-  if (size) nsize = size;
-  else nsize = pair->comm_forward;
+  int nsize = pair->comm_forward;
 
   for (iswap = 0; iswap < nswap; iswap++) {
 
@@ -1026,21 +1021,16 @@ void CommBrick::forward_comm(Pair *pair, int size)
 
 /* ----------------------------------------------------------------------
    reverse communication invoked by a Pair
-   size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_reverse from Pair
-   size > 0 -> Pair passes max size per atom
-   the latter is only useful if Pair does several comm modes,
-     some are smaller than max stored in its comm_reverse
+   nsize used only to set recv buffer limit
 ------------------------------------------------------------------------- */
 
-void CommBrick::reverse_comm(Pair *pair, int size)
+void CommBrick::reverse_comm(Pair *pair)
 {
-  int iswap,n,nsize;
+  int iswap,n;
   double *buf;
   MPI_Request request;
 
-  if (size) nsize = size;
-  else nsize = MAX(pair->comm_reverse,pair->comm_reverse_off);
+  int nsize = MAX(pair->comm_reverse,pair->comm_reverse_off);
 
   for (iswap = nswap-1; iswap >= 0; iswap--) {
 
@@ -1068,21 +1058,16 @@ void CommBrick::reverse_comm(Pair *pair, int size)
 
 /* ----------------------------------------------------------------------
    forward communication invoked by a Bond
-   size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_forward from Bond
-   size > 0 -> Bond passes max size per atom
-   the latter is only useful if Bond does several comm modes,
-     some are smaller than max stored in its comm_forward
+   nsize used only to set recv buffer limit
 ------------------------------------------------------------------------- */
 
-void CommBrick::forward_comm(Bond *bond, int size)
+void CommBrick::forward_comm(Bond *bond)
 {
-  int iswap,n,nsize;
+  int iswap,n;
   double *buf;
   MPI_Request request;
 
-  if (size) nsize = size;
-  else nsize = bond->comm_forward;
+  int nsize = bond->comm_forward;
 
   for (iswap = 0; iswap < nswap; iswap++) {
 
@@ -1110,21 +1095,16 @@ void CommBrick::forward_comm(Bond *bond, int size)
 
 /* ----------------------------------------------------------------------
    reverse communication invoked by a Bond
-   size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_reverse from Bond
-   size > 0 -> Bond passes max size per atom
-   the latter is only useful if Bond does several comm modes,
-     some are smaller than max stored in its comm_reverse
+   nsize used only to set recv buffer limit
 ------------------------------------------------------------------------- */
 
-void CommBrick::reverse_comm(Bond *bond, int size)
+void CommBrick::reverse_comm(Bond *bond)
 {
-  int iswap,n,nsize;
+  int iswap,n;
   double *buf;
   MPI_Request request;
 
-  if (size) nsize = size;
-  else nsize = MAX(bond->comm_reverse,bond->comm_reverse_off);
+  int nsize = MAX(bond->comm_reverse,bond->comm_reverse_off);
 
   for (iswap = nswap-1; iswap >= 0; iswap--) {
 
@@ -1195,10 +1175,10 @@ void CommBrick::forward_comm(Fix *fix, int size)
 /* ----------------------------------------------------------------------
    reverse communication invoked by a Fix
    size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_reverse from Fix
+   size = 0 (default) -> use comm_forward from Fix
    size > 0 -> Fix passes max size per atom
    the latter is only useful if Fix does several comm modes,
-     some are smaller than max stored in its comm_reverse
+     some are smaller than max stored in its comm_forward
 ------------------------------------------------------------------------- */
 
 void CommBrick::reverse_comm(Fix *fix, int size)
@@ -1279,21 +1259,16 @@ void CommBrick::reverse_comm_variable(Fix *fix)
 
 /* ----------------------------------------------------------------------
    forward communication invoked by a Compute
-   size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_forward from Compute
-   size > 0 -> Compute passes max size per atom
-   the latter is only useful if Compute does several comm modes,
-     some are smaller than max stored in its comm_forward
+   nsize used only to set recv buffer limit
 ------------------------------------------------------------------------- */
 
-void CommBrick::forward_comm(Compute *compute, int size)
+void CommBrick::forward_comm(Compute *compute)
 {
-  int iswap,n,nsize;
+  int iswap,n;
   double *buf;
   MPI_Request request;
 
-  if (size) nsize = size;
-  else nsize = compute->comm_forward;
+  int nsize = compute->comm_forward;
 
   for (iswap = 0; iswap < nswap; iswap++) {
 
@@ -1322,21 +1297,16 @@ void CommBrick::forward_comm(Compute *compute, int size)
 
 /* ----------------------------------------------------------------------
    reverse communication invoked by a Compute
-   size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_reverse from Compute
-   size > 0 -> Compute passes max size per atom
-   the latter is only useful if Compute does several comm modes,
-     some are smaller than max stored in its comm_reverse
+   nsize used only to set recv buffer limit
 ------------------------------------------------------------------------- */
 
-void CommBrick::reverse_comm(Compute *compute, int size)
+void CommBrick::reverse_comm(Compute *compute)
 {
-  int iswap,n,nsize;
+  int iswap,n;
   double *buf;
   MPI_Request request;
 
-  if (size) nsize = size;
-  else nsize = compute->comm_reverse;
+  int nsize = compute->comm_reverse;
 
   for (iswap = nswap-1; iswap >= 0; iswap--) {
 
@@ -1364,21 +1334,16 @@ void CommBrick::reverse_comm(Compute *compute, int size)
 
 /* ----------------------------------------------------------------------
    forward communication invoked by a Dump
-   size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_forward from Dump
-   size > 0 -> Dump passes max size per atom
-   the latter is only useful if Dump does several comm modes,
-     some are smaller than max stored in its comm_forward
+   nsize used only to set recv buffer limit
 ------------------------------------------------------------------------- */
 
-void CommBrick::forward_comm(Dump *dump, int size)
+void CommBrick::forward_comm(Dump *dump)
 {
-  int iswap,n,nsize;
+  int iswap,n;
   double *buf;
   MPI_Request request;
 
-  if (size) nsize = size;
-  else nsize = dump->comm_forward;
+  int nsize = dump->comm_forward;
 
   for (iswap = 0; iswap < nswap; iswap++) {
 
@@ -1407,21 +1372,16 @@ void CommBrick::forward_comm(Dump *dump, int size)
 
 /* ----------------------------------------------------------------------
    reverse communication invoked by a Dump
-   size/nsize used only to set recv buffer limit
-   size = 0 (default) -> use comm_reverse from Dump
-   size > 0 -> Dump passes max size per atom
-   the latter is only useful if Dump does several comm modes,
-     some are smaller than max stored in its comm_reverse
+   nsize used only to set recv buffer limit
 ------------------------------------------------------------------------- */
 
-void CommBrick::reverse_comm(Dump *dump, int size)
+void CommBrick::reverse_comm(Dump *dump)
 {
-  int iswap,n,nsize;
+  int iswap,n;
   double *buf;
   MPI_Request request;
 
-  if (size) nsize = size;
-  else nsize = dump->comm_reverse;
+  int nsize = dump->comm_reverse;
 
   for (iswap = nswap-1; iswap >= 0; iswap--) {
 

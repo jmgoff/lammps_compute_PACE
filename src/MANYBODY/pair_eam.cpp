@@ -384,7 +384,7 @@ void PairEAM::coeff(int narg, char **arg)
 {
   if (!allocated) allocate();
 
-  if (narg != 3) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (narg != 3) error->all(FLERR,"Incorrect args for pair coefficients");
 
   // parse pair of atom types
 
@@ -423,7 +423,7 @@ void PairEAM::coeff(int narg, char **arg)
     }
   }
 
-  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------

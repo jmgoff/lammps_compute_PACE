@@ -347,12 +347,12 @@ void PairEIM::coeff(int narg, char **arg)
 {
   if (!allocated) allocate();
 
-  if (narg < 5) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (narg < 5) error->all(FLERR,"Incorrect args for pair coefficients");
 
   // ensure I,J args are * *
 
   if (strcmp(arg[0],"*") != 0 || strcmp(arg[1],"*") != 0)
-    error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+    error->all(FLERR,"Incorrect args for pair coefficients");
 
   const int ntypes = atom->ntypes;
   map_element2type(ntypes,arg+(narg-ntypes));

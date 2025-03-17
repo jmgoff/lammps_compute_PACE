@@ -232,7 +232,7 @@ void PairLJCutCoulWolf::settings(int narg, char **arg)
 void PairLJCutCoulWolf::coeff(int narg, char **arg)
 {
   if (narg < 4 || narg > 5)
-    error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+    error->all(FLERR,"Incorrect args for pair coefficients");
   if (!allocated) allocate();
 
   int ilo,ihi,jlo,jhi;
@@ -256,7 +256,7 @@ void PairLJCutCoulWolf::coeff(int narg, char **arg)
     }
   }
 
-  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
+  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients");
 }
 
 /* ----------------------------------------------------------------------

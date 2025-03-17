@@ -119,8 +119,6 @@ void ComputeGridLocal::allocate()
 
 void ComputeGridLocal::deallocate()
 {
-  if (copymode) return;
-
   if (gridlocal_allocated) {
     gridlocal_allocated = 0;
     memory->destroy(alocal);
