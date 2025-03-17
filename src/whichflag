@@ -1,0 +1,569 @@
+  Error *error = lmp->error; \
+      lmp->error->warning("(library)", 0, error_text);
+      lmp->error->one("(library)", 0, error_text);
+      lmp->error->all("(library)", 0, error_text);
+      lmp->error->warning("(library)", 0, error_text);
+      lmp->error->one("(library)", 0, error_text);
+      lmp->error->all("(library)", 0, error_text);
+      lmp->error->universe_warn("(library)", 0, error_text);
+      lmp->error->universe_one("(library)", 0, error_text);
+      lmp->error->universe_all("(library)", 0, error_text);
+      lmp->error->warning("(library)", 0, mesg);
+      MPI_Abort(lmp->universe->uworld, 1);
+    lmp->input->substitute(copy, work, maxcopy, maxwork, 0);
+    if (lmp->update->whichflag != 0)
+      lmp->error->all(FLERR, "Issuing LAMMPS commands during a run is not allowed");
+      lmp->input->file(filename);
+    if (lmp->update->whichflag != 0)
+      lmp->error->all(FLERR, "Issuing LAMMPS command during a run is not allowed.");
+      result = lmp->input->one(cmd);
+    if (lmp->update->whichflag != 0) {
+      lmp->error->all(FLERR, "Issuing LAMMPS commands during a run is not allowed");
+        lmp->output->thermo->set_line(nline);
+            lmp->error->all(FLERR, "May only use jump SELF with command string buffer ");
+          if (!lmp->input->get_jump_skip()) {
+          if (lmp->comm->me == 0)
+        lmp->input->one(cmd);
+  auto  natoms = static_cast<double>(lmp->atom->natoms);
+    lmp->output->thermo->evaluate_keyword(keyword,&dval);
+  if (!lmp->output) return val;
+  Thermo *th = lmp->output->thermo;
+      if (lmp->update)
+        val = (void *) &lmp->update->setupflag;
+  Domain *domain = lmp->domain;
+    if (lmp->domain->box_exist == 0) {
+      if (lmp->comm->me == 0)
+        lmp->error->warning(FLERR, "Call to lammps_extract_box() without a box ignored");
+  Domain *domain = lmp->domain;
+    if (lmp->atom->natoms > 0)
+      lmp->error->all(FLERR, "Calling lammps_reset_box() not supported when atoms exist");
+    if (lmp->domain->box_exist == 0) {
+      if (lmp->comm->me == 0)
+        lmp->error->warning(FLERR,"Call to lammps_reset_box() without a box ignored");
+    lmp->comm->set_proc_grid();
+  MPI_Fint f_comm = MPI_Comm_c2f(lmp->world);
+  if (strcmp(keyword,"dimension") == 0) return lmp->domain->dimension;
+  if (strcmp(keyword,"box_exist") == 0) return lmp->domain->box_exist;
+  if (strcmp(keyword,"kokkos_active") == 0) return (lmp->kokkos) ? 1 : 0;
+  if (strcmp(keyword,"kokkos_nthreads") == 0) return (lmp->kokkos) ? lmp->kokkos->nthreads : 0;
+  if (strcmp(keyword,"kokkos_ngpus") == 0) return (lmp->kokkos) ? lmp->kokkos->ngpus : 0;
+  if (strcmp(keyword,"newton_bond") == 0) return lmp->force->newton_bond;
+  if (strcmp(keyword,"newton_pair") == 0) return lmp->force->newton_pair;
+  if (strcmp(keyword,"triclinic") == 0) return lmp->domain->triclinic;
+  if (strcmp(keyword,"universe_rank") == 0) return lmp->universe->me;
+  if (strcmp(keyword,"universe_size") == 0) return lmp->universe->nprocs;
+  if (strcmp(keyword,"world_rank") == 0) return lmp->comm->me;
+  if (strcmp(keyword,"world_size") == 0) return lmp->comm->nprocs;
+  if (strcmp(keyword,"nthreads") == 0) return lmp->comm->nthreads;
+  if (strcmp(keyword,"comm_style") == 0) return lmp->comm->style;
+  if (strcmp(keyword,"comm_layout") == 0) return lmp->comm->layout;
+  if (strcmp(keyword,"comm_mode") == 0) return lmp->comm->mode;
+  if (strcmp(keyword,"ghost_velocity") == 0) return lmp->comm->ghost_velocity;
+  if (strcmp(keyword,"nlocal") == 0) return lmp->atom->nlocal;
+  if (strcmp(keyword,"nghost") == 0) return lmp->atom->nghost;
+  if (strcmp(keyword,"nall") == 0) return lmp->atom->nlocal+lmp->atom->nghost;
+  if (strcmp(keyword,"nmax") == 0) return lmp->atom->nmax;
+  if (strcmp(keyword,"ntypes") == 0) return lmp->atom->ntypes;
+  if (strcmp(keyword,"nbondtypes") == 0) return lmp->atom->nbondtypes;
+  if (strcmp(keyword,"nangletypes") == 0) return lmp->atom->nangletypes;
+  if (strcmp(keyword,"ndihedraltypes") == 0) return lmp->atom->ndihedraltypes;
+  if (strcmp(keyword,"nimpropertypes") == 0) return lmp->atom->nimpropertypes;
+  if (strcmp(keyword,"nellipsoids") == 0) return lmp->atom->nellipsoids;
+  if (strcmp(keyword,"nlines") == 0) return lmp->atom->nlines;
+  if (strcmp(keyword,"ntris") == 0) return lmp->atom->ntris;
+  if (strcmp(keyword,"nbodies") == 0) return lmp->atom->nbodies;
+  if (strcmp(keyword,"molecule_flag") == 0) return lmp->atom->molecule_flag;
+  if (strcmp(keyword,"q_flag") == 0) return lmp->atom->q_flag;
+  if (strcmp(keyword,"mu_flag") == 0) return lmp->atom->mu_flag;
+  if (strcmp(keyword,"rmass_flag") == 0) return lmp->atom->rmass_flag;
+  if (strcmp(keyword,"radius_flag") == 0) return lmp->atom->radius_flag;
+  if (strcmp(keyword,"ellipsoid_flag") == 0) return lmp->atom->ellipsoid_flag;
+  if (strcmp(keyword,"omega_flag") == 0) return lmp->atom->omega_flag;
+  if (strcmp(keyword,"torque_flag") == 0) return lmp->atom->torque_flag;
+  if (strcmp(keyword,"angmom_flag") == 0) return lmp->atom->angmom_flag;
+  if (strcmp(keyword,"peri_flag") == 0) return lmp->atom->peri_flag;
+  if (strcmp(name,"units") == 0) return (void *) lmp->update->unit_style;
+  if (strcmp(name,"atom_style") == 0) return (void *) lmp->atom->atom_style;
+  if (strcmp(name,"pair_style") == 0) return (void *) lmp->force->pair_style;
+  if (strcmp(name,"bond_style") == 0) return (void *) lmp->force->bond_style;
+  if (strcmp(name,"angle_style") == 0) return (void *) lmp->force->angle_style;
+  if (strcmp(name,"dihedral_style") == 0) return (void *) lmp->force->dihedral_style;
+  if (strcmp(name,"improper_style") == 0) return (void *) lmp->force->improper_style;
+  if (strcmp(name,"kspace_style") == 0) return (void *) lmp->force->kspace_style;
+  if (strcmp(name,"dt") == 0) return (void *) &lmp->update->dt;
+  if (strcmp(name,"ntimestep") == 0) return (void *) &lmp->update->ntimestep;
+  if (strcmp(name,"atime") == 0) return (void *) &lmp->update->atime;
+  if (strcmp(name,"atimestep") == 0) return (void *) &lmp->update->atimestep;
+  if (utils::strmatch(lmp->update->integrate_style,"^respa")) {
+    auto respa = dynamic_cast<Respa *>(lmp->update->integrate);
+  if (strcmp(name,"boxlo") == 0) return (void *) lmp->domain->boxlo;
+  if (strcmp(name,"boxhi") == 0) return (void *) lmp->domain->boxhi;
+  if (strcmp(name,"sublo") == 0) return (void *) lmp->domain->sublo;
+  if (strcmp(name,"subhi") == 0) return (void *) lmp->domain->subhi;
+  if (lmp->domain->triclinic) {
+      return (void *) lmp->domain->sublo_lamda;
+      return (void *) lmp->domain->subhi_lamda;
+  if (strcmp(name,"boxxlo") == 0) return (void *) &lmp->domain->boxlo[0];
+  if (strcmp(name,"boxxhi") == 0) return (void *) &lmp->domain->boxhi[0];
+  if (strcmp(name,"boxylo") == 0) return (void *) &lmp->domain->boxlo[1];
+  if (strcmp(name,"boxyhi") == 0) return (void *) &lmp->domain->boxhi[1];
+  if (strcmp(name,"boxzlo") == 0) return (void *) &lmp->domain->boxlo[2];
+  if (strcmp(name,"boxzhi") == 0) return (void *) &lmp->domain->boxhi[2];
+  if (strcmp(name,"periodicity") == 0) return (void *) lmp->domain->periodicity;
+  if (strcmp(name,"triclinic") == 0) return (void *) &lmp->domain->triclinic;
+  if (strcmp(name,"xy") == 0) return (void *) &lmp->domain->xy;
+  if (strcmp(name,"xz") == 0) return (void *) &lmp->domain->xz;
+  if (strcmp(name,"yz") == 0) return (void *) &lmp->domain->yz;
+  if (strcmp(name,"xlattice") == 0) return (void *) &lmp->domain->lattice->xlattice;
+  if (strcmp(name,"ylattice") == 0) return (void *) &lmp->domain->lattice->ylattice;
+  if (strcmp(name,"zlattice") == 0) return (void *) &lmp->domain->lattice->zlattice;
+  if (((lmp->comm->layout == Comm::LAYOUT_UNIFORM) ||
+       (lmp->comm->layout == Comm::LAYOUT_NONUNIFORM)) && (strcmp(name,"procgrid") == 0))
+    return (void *) &lmp->comm->procgrid;
+  if (strcmp(name,"natoms") == 0) return (void *) &lmp->atom->natoms;
+  if (strcmp(name,"ntypes") == 0) return (void *) &lmp->atom->ntypes;
+  if (strcmp(name,"nbonds") == 0) return (void *) &lmp->atom->nbonds;
+  if (strcmp(name,"nangles") == 0) return (void *) &lmp->atom->nangles;
+  if (strcmp(name,"ndihedrals") == 0) return (void *) &lmp->atom->ndihedrals;
+  if (strcmp(name,"nimpropers") == 0) return (void *) &lmp->atom->nimpropers;
+  if (strcmp(name,"nlocal") == 0) return (void *) &lmp->atom->nlocal;
+  if (strcmp(name,"nghost") == 0) return (void *) &lmp->atom->nghost;
+  if (strcmp(name,"nmax") == 0) return (void *) &lmp->atom->nmax;
+  if (strcmp(name,"special_lj") == 0) return (void *) lmp->force->special_lj;
+  if (strcmp(name,"special_coul") == 0) return (void *) lmp->force->special_coul;
+  if (strcmp(name,"q_flag") == 0) return (void *) &lmp->atom->q_flag;
+  if (strcmp(name,"map_style") == 0) return (void *) &lmp->atom->map_style;
+  if (strcmp(name,"map_tag_max") == 0) return (void *) &lmp->atom->map_tag_max;
+  if (strcmp(name,"sametag") == 0) return (void *) lmp->atom->sametag;
+  if (strcmp(name,"sortfreq") == 0) return (void *) &lmp->atom->sortfreq;
+  if (strcmp(name,"nextsort") == 0) return (void *) &lmp->atom->nextsort;
+  if (strcmp(name,"boltz") == 0) return (void *) &lmp->force->boltz;
+  if (strcmp(name,"hplanck") == 0) return (void *) &lmp->force->hplanck;
+  if (strcmp(name,"mvv2e") == 0) return (void *) &lmp->force->mvv2e;
+  if (strcmp(name,"ftm2v") == 0) return (void *) &lmp->force->ftm2v;
+  if (strcmp(name,"mv2d") == 0) return (void *) &lmp->force->mv2d;
+  if (strcmp(name,"nktv2p") == 0) return (void *) &lmp->force->nktv2p;
+  if (strcmp(name,"qqr2e") == 0) return (void *) &lmp->force->qqr2e;
+  if (strcmp(name,"qe2f") == 0) return (void *) &lmp->force->qe2f;
+  if (strcmp(name,"vxmu2f") == 0) return (void *) &lmp->force->vxmu2f;
+  if (strcmp(name,"xxt2kmu") == 0) return (void *) &lmp->force->xxt2kmu;
+  if (strcmp(name,"dielectric") == 0) return (void *) &lmp->force->dielectric;
+  if (strcmp(name,"qqrd2e") == 0) return (void *) &lmp->force->qqrd2e;
+  if (strcmp(name,"e_mass") == 0) return (void *) &lmp->force->e_mass;
+  if (strcmp(name,"hhmrr2e") == 0) return (void *) &lmp->force->hhmrr2e;
+  if (strcmp(name,"mvh2r") == 0) return (void *) &lmp->force->mvh2r;
+  if (strcmp(name,"angstrom") == 0) return (void *) &lmp->force->angstrom;
+  if (strcmp(name,"femtosecond") == 0) return (void *) &lmp->force->femtosecond;
+  if (strcmp(name,"qelectron") == 0) return (void *) &lmp->force->qelectron;
+  auto pair = lmp->force->pair;
+  if (lmp->force->pair->extract(name, dim)) return dim;
+  auto pair = lmp->force->pair;
+  return lmp->force->pair->extract(name, dim);
+  if (lmp->atom->map_style > Atom::MAP_NONE)
+    return lmp->atom->map(*tag);
+  return lmp->atom->extract_datatype(name);
+  return lmp->atom->extract_size(name, type);
+  return lmp->atom->extract(name);
+    auto compute = lmp->modify->get_compute_by_id(id);
+        if (compute->invoked_scalar != lmp->update->ntimestep)
+        if (compute->invoked_vector != lmp->update->ntimestep)
+        if (compute->invoked_array != lmp->update->ntimestep)
+      if (compute->invoked_peratom != lmp->update->ntimestep)
+      if (compute->invoked_local != lmp->update->ntimestep)
+    auto fix = lmp->modify->get_fix_by_id(id);
+    int ivar = lmp->input->variable->find(name);
+    if (lmp->input->variable->equalstyle(ivar)) {
+      *dptr = lmp->input->variable->compute_equal(ivar);
+    } else if (lmp->input->variable->atomstyle(ivar)) {
+      int igroup = lmp->group->find(group);
+      int nlocal = lmp->atom->nlocal;
+      lmp->input->variable->compute_atom(ivar,igroup,vector,1,0);
+    } else if (lmp->input->variable->vectorstyle(ivar)) {
+      int nvector = lmp->input->variable->compute_vector(ivar, &values);
+      return lmp->input->variable->retrieve(name);
+    int ivar = lmp->input->variable->find(name);
+    if (lmp->input->variable->equalstyle(ivar))
+    else if (lmp->input->variable->atomstyle(ivar))
+    else if (lmp->input->variable->vectorstyle(ivar))
+    err = lmp->input->variable->set_string(name,str);
+    int ivar = lmp->input->variable->find(name);
+    if (lmp->input->variable->internalstyle(ivar)) {
+        lmp->input->variable->internal_set(ivar, value);
+  if ((idx >= 0) && (idx < lmp->input->variable->nvar)) {
+    lmp->error->all(FLERR,"Library function lammps_gather_atoms() "
+    if (lmp->atom->tag_enable == 0 || lmp->atom->tag_consecutive() == 0)
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+      lmp->error->all(FLERR,"lammps_gather_atoms(): Atom-IDs must exist and be consecutive");
+    int natoms = static_cast<int> (lmp->atom->natoms);
+    void *vptr = lmp->atom->extract(name);
+      lmp->error->all(FLERR, "lammps_gather_atoms(): unknown property {}", name);
+      lmp->memory->create(copy,count*natoms,"lib/gather:copy");
+      tagint *tag = lmp->atom->tag;
+      int nlocal = lmp->atom->nlocal;
+      MPI_Allreduce(copy,data,count*natoms,MPI_INT,MPI_SUM,lmp->world);
+      lmp->memory->destroy(copy);
+      lmp->memory->create(copy,count*natoms,"lib/gather:copy");
+      tagint *tag = lmp->atom->tag;
+      int nlocal = lmp->atom->nlocal;
+      MPI_Allreduce(copy,data,count*natoms,MPI_DOUBLE,MPI_SUM,lmp->world);
+      lmp->memory->destroy(copy);
+      lmp->error->all(FLERR,"lammps_gather_atoms(): unsupported data type");
+    lmp->error->all(FLERR,"Library function lammps_gather_atoms_concat() "
+    if (lmp->atom->tag_enable == 0) flag = 1;
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+      lmp->error->all(FLERR,"lammps_gather_atoms_concat(): Atom-IDs must exist");
+    int natoms = static_cast<int> (lmp->atom->natoms);
+    void *vptr = lmp->atom->extract(name);
+      lmp->error->all(FLERR,"lammps_gather_atoms_concat(): unknown property {}", name);
+    int nprocs = lmp->comm->nprocs;
+    lmp->memory->create(recvcounts,nprocs,"lib/gather:recvcounts");
+    lmp->memory->create(displs,nprocs,"lib/gather:displs");
+      int nlocal = lmp->atom->nlocal;
+        MPI_Allgather(&nlocal,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+        MPI_Allgatherv(vector,nlocal,MPI_INT,data,recvcounts,displs,MPI_INT,lmp->world);
+        lmp->memory->create(copy,count*natoms,"lib/gather:copy");
+        MPI_Allgather(&n,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+        MPI_Allgatherv(copy,count*nlocal,MPI_INT,data,recvcounts,displs,MPI_INT,lmp->world);
+        lmp->memory->destroy(copy);
+        MPI_Allgather(&n,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+        MPI_Allgatherv(&array[0][0],count*nlocal,MPI_INT,data,recvcounts,displs,MPI_INT,lmp->world);
+      int nlocal = lmp->atom->nlocal;
+        MPI_Allgather(&nlocal,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+        MPI_Allgatherv(vector,nlocal,MPI_DOUBLE,data,recvcounts,displs,MPI_DOUBLE,lmp->world);
+        MPI_Allgather(&n,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+                       data,recvcounts,displs,MPI_DOUBLE,lmp->world);
+    lmp->memory->destroy(recvcounts);
+    lmp->memory->destroy(displs);
+    lmp->error->all(FLERR,"Library function lammps_gather_atoms_subset() "
+    if (lmp->atom->tag_enable == 0) flag = 1;
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+    if (lmp->atom->map_style == Atom::MAP_NONE) flag = 1;
+      lmp->error->all(FLERR,"lammps_gather_atoms_subset(): Atom-IDs must exist and be mapped");
+    void *vptr = lmp->atom->extract(name);
+      lmp->error->all(FLERR,"lammps_gather_atoms_subset(): unknown property {}", name);
+      lmp->memory->create(copy,count*ndata,"lib/gather:copy");
+      int nlocal = lmp->atom->nlocal;
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal)
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal) {
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal) {
+      MPI_Allreduce(copy,data,count*ndata,MPI_INT,MPI_SUM,lmp->world);
+      lmp->memory->destroy(copy);
+      lmp->memory->create(copy,count*ndata,"lib/gather:copy");
+      int nlocal = lmp->atom->nlocal;
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal)
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal) {
+      MPI_Allreduce(copy,data,count*ndata,MPI_DOUBLE,MPI_SUM,lmp->world);
+      lmp->memory->destroy(copy);
+    lmp->error->all(FLERR,"Library function lammps_scatter_atoms() "
+    if (lmp->atom->tag_enable == 0 || lmp->atom->tag_consecutive() == 0)
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+    if (lmp->atom->map_style == Atom::MAP_NONE) flag = 1;
+      lmp->error->all(FLERR,"lammps_scatter_atoms(): "
+    int natoms = static_cast<int> (lmp->atom->natoms);
+    void *vptr = lmp->atom->extract(name);
+      lmp->error->all(FLERR, "lammps_scatter_atoms(): unknown property {}", name);
+          if ((m = lmp->atom->map(i+1)) >= 0)
+          if ((m = lmp->atom->map(i+1)) >= 0) {
+          if ((m = lmp->atom->map(i+1)) >= 0) {
+          if ((m = lmp->atom->map(i+1)) >= 0)
+          if ((m = lmp->atom->map(i+1)) >= 0) {
+    lmp->error->all(FLERR,"Library function lammps_scatter_atoms_subset() "
+    if (lmp->atom->tag_enable == 0) flag = 1;
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+    if (lmp->atom->map_style == Atom::MAP_NONE) flag = 1;
+      lmp->error->all(FLERR,"lammps_scatter_atoms_subset(): Atom-IDs must exist and be mapped");
+    void *vptr = lmp->atom->extract(name);
+      lmp->error->all(FLERR, "lammps_scatter_atoms_subset(): unknown property {}", name);
+          if ((m = lmp->atom->map(id)) >= 0)
+          if ((m = lmp->atom->map(id)) >= 0) {
+          if ((m = lmp->atom->map(id)) >= 0) {
+          if ((m = lmp->atom->map(id)) >= 0)
+          if ((m = lmp->atom->map(id)) >= 0) {
+    int localbonds = lmp->atom->avec->pack_bond(nullptr);
+    int nprocs = lmp->comm->nprocs;
+    MPI_Allgather(&localbonds, 1, MPI_INT, bufsizes, 1, MPI_INT, lmp->world);
+    lmp->memory->create(bonds, localbonds+1, 3, "library:gather_bonds:localbonds");
+    lmp->atom->avec->pack_bond(bonds);
+                   bufoffsets, MPI_LMP_TAGINT, lmp->world);
+    lmp->memory->destroy(bonds);
+    int localangles = lmp->atom->avec->pack_angle(nullptr);
+    int nprocs = lmp->comm->nprocs;
+    MPI_Allgather(&localangles, 1, MPI_INT, bufsizes, 1, MPI_INT, lmp->world);
+    lmp->memory->create(angles, localangles+1, 4, "library:gather_angles:localangles");
+    lmp->atom->avec->pack_angle(angles);
+                   bufoffsets, MPI_LMP_TAGINT, lmp->world);
+    lmp->memory->destroy(angles);
+    int localdihedrals = lmp->atom->avec->pack_dihedral(nullptr);
+    int nprocs = lmp->comm->nprocs;
+    MPI_Allgather(&localdihedrals, 1, MPI_INT, bufsizes, 1, MPI_INT, lmp->world);
+    lmp->memory->create(dihedrals, localdihedrals+1, 5, "library:gather_dihedrals:localdihedrals");
+    lmp->atom->avec->pack_dihedral(dihedrals);
+                   bufoffsets, MPI_LMP_TAGINT, lmp->world);
+    lmp->memory->destroy(dihedrals);
+    int localimpropers = lmp->atom->avec->pack_improper(nullptr);
+    int nprocs = lmp->comm->nprocs;
+    MPI_Allgather(&localimpropers, 1, MPI_INT, bufsizes, 1, MPI_INT, lmp->world);
+    lmp->memory->create(impropers, localimpropers+1, 5, "library:gather_impropers:localimpropers");
+    lmp->atom->avec->pack_improper(impropers);
+                   bufoffsets, MPI_LMP_TAGINT, lmp->world);
+    lmp->memory->destroy(impropers);
+    lmp->error->all(FLERR, "Library function lammps_gather() is not compatible with -DLAMMPS_BIGBIG");
+    if (lmp->atom->tag_enable == 0 || lmp->atom->tag_consecutive() == 0)
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+      lmp->error->all(FLERR,"lammps_gather(): Atom-IDs must exist, and be consecutive");
+    int natoms = static_cast<int> (lmp->atom->natoms);
+    void *vptr = lmp->atom->extract(name);
+      auto fix = lmp->modify->get_fix_by_id(fixid);
+        lmp->error->all(FLERR,"lammps_gather(): unknown fix id {}", fixid);
+        lmp->error->all(FLERR,"lammps_gather(): fix {} does not return peratom data", fixid);
+        lmp->error->all(FLERR,"lammps_gather: count != values peratom for fix {}", fixid);
+      if (lmp->update->ntimestep % fix->peratom_freq) {
+        lmp->error->all(FLERR,"lammps_gather: fix {} not computed at compatible time", fixid);
+      auto compute = lmp->modify->get_compute_by_id(compid);
+        lmp->error->all(FLERR,"lammps_gather(): unknown compute id {}", compid);
+        lmp->error->all(FLERR,"lammps_gather(): compute {} does not return peratom data", compid);
+        lmp->error->all(FLERR,"lammps_gather(): count != values peratom for compute {}", compid);
+      if (compute->invoked_peratom != lmp->update->ntimestep)
+      idx = lmp->atom->find_custom(propid,ltype,icol);
+        lmp->error->all(FLERR,"lammps_gather(): unknown property/atom id {}", propid);
+        lmp->error->all(FLERR,"lammps_gather(): mismatch property/atom type for {}", propid);
+        lmp->error->all(FLERR,"lammps_gather(): mismatch property/atom count for {}", propid);
+        lmp->error->all(FLERR,"lammps_gather(): mismatch property/atom count for {}", propid);
+        if (ltype==0) vptr = (void *) lmp->atom->ivector[idx];
+        else vptr = (void *) lmp->atom->dvector[idx];
+        if (ltype==0) vptr = (void *) lmp->atom->iarray[idx];
+        else vptr = (void *) lmp->atom->darray[idx];
+      lmp->error->all(FLERR,"lammps_gather(): undefined property {}", name);
+      lmp->memory->create(copy,count*natoms,"lib/gather:copy");
+      tagint *tag = lmp->atom->tag;
+      int nlocal = lmp->atom->nlocal;
+      MPI_Allreduce(copy,data,count*natoms,MPI_INT,MPI_SUM,lmp->world);
+      lmp->memory->destroy(copy);
+      lmp->memory->create(copy,count*natoms,"lib/gather:copy");
+      tagint *tag = lmp->atom->tag;
+      int nlocal = lmp->atom->nlocal;
+      MPI_Allreduce(copy,data,count*natoms,MPI_DOUBLE,MPI_SUM,lmp->world);
+      lmp->memory->destroy(copy);
+    lmp->error->all(FLERR,"Library function lammps_gather_concat()"
+    if (lmp->atom->tag_enable == 0) flag = 1;
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+      lmp->error->all(FLERR,"lammps_gather_concat(): atom-IDs must exist");
+    int natoms = static_cast<int> (lmp->atom->natoms);
+    void *vptr = lmp->atom->extract(name);
+      auto fix = lmp->modify->get_fix_by_id(fixid);
+        lmp->error->all(FLERR,"lammps_gather_concat(): unknown fix id {}", fixid);
+        lmp->error->all(FLERR,"lammps_gather_concat(): fix {} does not return peratom data", fixid);
+        lmp->error->all(FLERR,"lammps_gather_concat(): count != values peratom for fix {}", fixid);
+      if (lmp->update->ntimestep % fix->peratom_freq) {
+        lmp->error->all(FLERR,"lammps_gather_concat(): fix {} not computed at compatible time",
+      auto compute = lmp->modify->get_compute_by_id(compid);
+        lmp->error->all(FLERR,"lammps_gather_concat(): unknown compute id {}", compid);
+        lmp->error->all(FLERR,"lammps_gather_concat(): compute {} does not return peratom data",
+        lmp->error->all(FLERR,"lammps_gather_concat(): count != values peratom for compute {}",
+      if (compute->invoked_peratom != lmp->update->ntimestep)
+      idx = lmp->atom->find_custom(propid,ltype,icol);
+        lmp->error->all(FLERR,"lammps_gather_concat(): unknown property/atom id {}", propid);
+        lmp->error->all(FLERR,"lammps_gather_concat(): mismatch property/atom {} type", propid);
+        lmp->error->all(FLERR,"lammps_gather_concat(): mismatch property/atom {} count", propid);
+        lmp->error->all(FLERR,"lammps_gather_concat(): mismatch property/atom {} count", propid);
+        if (ltype==0) vptr = (void *) lmp->atom->ivector[idx];
+        else vptr = (void *) lmp->atom->dvector[idx];
+        if (ltype==0) vptr = (void *) lmp->atom->iarray[idx];
+        else vptr = (void *) lmp->atom->darray[idx];
+      lmp->error->all(FLERR,"lammps_gather_concat(): undefined property {}", name);
+    int nprocs = lmp->comm->nprocs;
+    lmp->memory->create(recvcounts,nprocs,"lib/gather:recvcounts");
+    lmp->memory->create(displs,nprocs,"lib/gather:displs");
+      int nlocal = lmp->atom->nlocal;
+        MPI_Allgather(&nlocal,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+                       MPI_INT,lmp->world);
+        lmp->memory->create(copy,count*natoms,"lib/gather:copy");
+        MPI_Allgather(&n,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+        MPI_Allgatherv(copy,count*nlocal,MPI_INT,data,recvcounts,displs,MPI_INT,lmp->world);
+        lmp->memory->destroy(copy);
+        MPI_Allgather(&n,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+        MPI_Allgatherv(&array[0][0],count*nlocal,MPI_INT,data,recvcounts,displs,MPI_INT,lmp->world);
+      int nlocal = lmp->atom->nlocal;
+        MPI_Allgather(&nlocal,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+                       MPI_DOUBLE,lmp->world);
+        MPI_Allgather(&n,1,MPI_INT,recvcounts,1,MPI_INT,lmp->world);
+                       data,recvcounts,displs,MPI_DOUBLE,lmp->world);
+    lmp->memory->destroy(recvcounts);
+    lmp->memory->destroy(displs);
+    lmp->error->all(FLERR,"Library function lammps_gather_subset() "
+    if (lmp->atom->tag_enable == 0) flag = 1;
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+    if (lmp->atom->map_style == Atom::MAP_NONE) flag = 1;
+      lmp->error->all (FLERR,"lammps_gather_subset(): atom IDs must be enabled and mapped");
+    void *vptr = lmp->atom->extract(name);
+      auto fix = lmp->modify->get_fix_by_id(fixid);
+        lmp->error->all(FLERR,"lammps_gather_subset(): unknown fix id {}", fixid);
+        lmp->error->all(FLERR,"lammps_gather_subset(): fix {} does not return peratom data", fixid);
+        lmp->error->all(FLERR,"lammps_gather_subset(): count != values peratom for fix {}", fixid);
+      if (lmp->update->ntimestep % fix->peratom_freq) {
+        lmp->error->all(FLERR,"lammps_gather_subset(): fix {} not computed at compatible time", fixid);
+      auto compute = lmp->modify->get_compute_by_id(compid);
+        lmp->error->all(FLERR,"lammps_gather_subset(): unknown compute id {}", compid);
+        lmp->error->all(FLERR,"lammps_gather_subset(): compute {} does not return peratom data",
+        lmp->error->all(FLERR,"lammps_gather_subset(): count != values peratom for compute {}",
+      if (compute->invoked_peratom != lmp->update->ntimestep)
+      idx = lmp->atom->find_custom(propid,ltype,icol);
+        lmp->error->all(FLERR,"lammps_gather_subset(): unknown property/atom id {}", propid);
+        lmp->error->all(FLERR,"lammps_gather_subset(): mismatch property/atom {} type", propid);
+        lmp->error->all(FLERR,"lammps_gather_subset(): mismatch property/atom {} count", propid);
+        lmp->error->all(FLERR,"lammps_gather_subset(): mismatch property/atom {} count", propid);
+        if (ltype==0) vptr = (void *) lmp->atom->ivector[idx];
+        else vptr = (void *) lmp->atom->dvector[idx];
+        if (ltype==0) vptr = (void *) lmp->atom->iarray[idx];
+        else vptr = (void *) lmp->atom->darray[idx];
+      lmp->error->all(FLERR,"lammps_gather_subset(): undefined property {}", name);
+      lmp->memory->create(copy,count*ndata,"lib/gather:copy");
+      int nlocal = lmp->atom->nlocal;
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal)
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal) {
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal) {
+      MPI_Allreduce(copy,data,count*ndata,MPI_INT,MPI_SUM,lmp->world);
+      lmp->memory->destroy(copy);
+      lmp->memory->create(copy,count*ndata,"lib/gather:copy");
+      int nlocal = lmp->atom->nlocal;
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal)
+          if ((m = lmp->atom->map(id)) >= 0 && m < nlocal) {
+      MPI_Allreduce(copy,data,count*ndata,MPI_DOUBLE,MPI_SUM,lmp->world);
+      lmp->memory->destroy(copy);
+    lmp->error->all(FLERR,"Library function lammps_scatter() "
+    if (lmp->atom->tag_enable == 0 || lmp->atom->tag_consecutive() == 0)
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+    if (lmp->atom->map_style == Atom::MAP_NONE) flag = 1;
+      lmp->error->all(FLERR,"lammps_scatter(): atom IDs must be defined, consecutive, and mapped");
+    int natoms = static_cast<int> (lmp->atom->natoms);
+    void *vptr = lmp->atom->extract(name);
+      auto fix = lmp->modify->get_fix_by_id(fixid);
+        lmp->error->all(FLERR,"lammps_scatter(): unknown fix id {}", fixid);
+        lmp->error->all(FLERR,"lammps_scatter(): fix {} does not return peratom data", fixid);
+        lmp->error->all(FLERR,"lammps_scatter(): count != values peratom for fix {}", fixid);
+      auto compute = lmp->modify->get_compute_by_id(compid);
+        lmp->error->all(FLERR,"lammps_scatter(): unknown compute id {}",compid);
+        lmp->error->all(FLERR,"lammps_scatter(): compute {} does not return peratom data", compid);
+        lmp->error->all(FLERR,"lammps_scatter(): count != values peratom for compute {}", compid);
+      if (compute->invoked_peratom != lmp->update->ntimestep)
+      idx = lmp->atom->find_custom(propid,ltype,icol);
+        lmp->error->all(FLERR,"lammps_scatter(): unknown property/atom id {}", propid);
+        lmp->error->all(FLERR,"lammps_scatter(): mismatch property/atom {} type", propid);
+        lmp->error->all(FLERR,"lammps_scatter(): mismatch property/atom {} count", propid);
+        lmp->error->all(FLERR,"lammps_scatter(): mismatch property/atom {} count", propid);
+        if (ltype==0) vptr = (void *) lmp->atom->ivector[idx];
+        else vptr = (void *) lmp->atom->dvector[idx];
+        if (ltype==0) vptr = (void *) lmp->atom->iarray[idx];
+        else vptr = (void *) lmp->atom->darray[idx];
+      lmp->error->all(FLERR,"lammps_scatter(): unknown property {}", name);
+          if ((m = lmp->atom->map(i+1)) >= 0)
+          if ((m = lmp->atom->map(i+1)) >= 0) {
+          if ((m = lmp->atom->map(i+1)) >= 0) {
+          if ((m = lmp->atom->map(i+1)) >= 0)
+          if ((m = lmp->atom->map(i+1)) >= 0) {
+    lmp->error->all(FLERR,"Library function lammps_scatter_subset() "
+    if (lmp->atom->tag_enable == 0) flag = 1;
+    if (lmp->atom->natoms > MAXSMALLINT) flag = 1;
+    if (lmp->atom->map_style == Atom::MAP_NONE) flag = 1;
+      lmp->error->all(FLERR,"lammps_scatter_subset(): atom-IDs must be defined and mapped");
+    void *vptr = lmp->atom->extract(name);
+      auto fix = lmp->modify->get_fix_by_id(fixid);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): unknown fix id {}", fixid);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): fix {} does not return peratom data", fixid);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): count != values peratom for fix {}", fixid);
+      auto compute = lmp->modify->get_compute_by_id(compid);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): unknown compute id {}", compid);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): compute {} does not return peratom data",
+        lmp->error->all(FLERR,"lammps_scatter_subset(): count != values peratom for compute {}",
+      if (compute->invoked_peratom != lmp->update->ntimestep)
+      idx = lmp->atom->find_custom(propid,ltype,icol);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): unknown property/atom id {}", propid);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): mismatch property/atom {} type", propid);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): mismatch property/atom {} count", propid);
+        lmp->error->all(FLERR,"lammps_scatter_subset(): mismatch property/atom {} count", propid);
+        if (ltype==0) vptr = (void *) lmp->atom->ivector[idx];
+        else vptr = (void *) lmp->atom->dvector[idx];
+        if (ltype==0) vptr = (void *) lmp->atom->iarray[idx];
+        else vptr = (void *) lmp->atom->darray[idx];
+      lmp->error->all(FLERR,"lammps_scatter_subset(): unknown property {}", name);
+          if ((m = lmp->atom->map(id)) >= 0)
+          if ((m = lmp->atom->map(id)) >= 0) {
+          if ((m = lmp->atom->map(id)) >= 0) {
+          if ((m = lmp->atom->map(id)) >= 0)
+          if ((m = lmp->atom->map(id)) >= 0) {
+  bigint natoms_prev = lmp->atom->natoms;
+    if (lmp->domain->box_exist == 0) {
+    if (lmp->atom->tag_enable == 0) {
+      lmp->error->all(FLERR, msg);
+    Atom *atom = lmp->atom;
+    Domain *domain = lmp->domain;
+    MPI_Allreduce(&ncurrent,&lmp->atom->natoms,1,MPI_LMP_BIGINT,
+                  MPI_SUM,lmp->world);
+    if (lmp->atom->map_style != Atom::MAP_NONE) {
+      lmp->atom->map_init();
+      lmp->atom->map_set();
+  return (int) lmp->atom->natoms - natoms_prev;
+  Pair *pair = lmp->force->pair_match(style, exact, nsub);
+    for (int i = 0; i < lmp->neighbor->nlist; i++) {
+      NeighList *list = lmp->neighbor->lists[i];
+  auto fix = lmp->modify->get_fix_by_id(id);
+  for (int i = 0; i < lmp->neighbor->nlist; i++) {
+    NeighList *list = lmp->neighbor->lists[i];
+  auto compute = lmp->modify->get_compute_by_id(id);
+  for (int i = 0; i < lmp->neighbor->nlist; i++) {
+    NeighList * list = lmp->neighbor->lists[i];
+  Neighbor * neighbor = lmp->neighbor;
+  Neighbor * neighbor = lmp->neighbor;
+  return lmp->num_ver;
+    if (lmp->modify->get_compute_by_id(name)) return 1;
+    if (lmp->output->get_dump_by_id(name)) return 1;
+    if (lmp->modify->get_fix_by_id(name)) return 1;
+    if (lmp->group->find(name) >= 0) return 1;
+    if (lmp->atom->find_molecule(name) >= 0) return 1;
+    if (lmp->domain->get_region_by_id(name)) return 1;
+    if (lmp->input->variable->find(name) >= 0) return 1;
+    return lmp->modify->get_compute_list().size();
+    return lmp->output->get_dump_list().size();
+    return lmp->modify->get_fix_list().size();
+    return lmp->group->ngroup;
+    return lmp->atom->nmolecule;
+    return lmp->domain->get_region_list().size();
+    return lmp->input->variable->nvar;
+    auto icompute = lmp->modify->get_compute_by_index(idx);
+    auto idump = lmp->output->get_dump_by_index(idx);
+    auto ifix = lmp->modify->get_fix_by_index(idx);
+    if ((idx >= 0) && (idx < lmp->group->ngroup)) {
+      strncpy(buffer, lmp->group->names[idx], buf_size);
+    if ((idx >= 0) && (idx < lmp->atom->nmolecule)) {
+      strncpy(buffer, lmp->atom->molecules[idx]->id, buf_size);
+    auto regions = lmp->domain->get_region_list();
+    if ((idx >= 0) && (idx < lmp->input->variable->nvar)) {
+      strncpy(buffer, lmp->input->variable->names[idx], buf_size);
+    auto fix = lmp->modify->get_fix_by_id(id);
+    if (!fix) lmp->error->all(FLERR,"Cannot find fix with ID '{}'!", id);
+      lmp->error->all(FLERR,"Fix '{}' is not of style 'external'", id);
+    auto fix = lmp->modify->get_fix_by_id(id);
+    if (!fix) lmp->error->all(FLERR,"Can not find fix with ID '{}'!", id);
+      lmp->error->all(FLERR,"Fix '{}' is not of style external!", id);
+    auto fix = lmp->modify->get_fix_by_id(id);
+    if (!fix) lmp->error->all(FLERR,"Can not find fix with ID '{}'!", id);
+      lmp->error->all(FLERR,"Fix '{}' is not of style external!", id);
+    auto fix = lmp->modify->get_fix_by_id(id);
+    if (!fix) lmp->error->all(FLERR,"Can not find fix with ID '{}'!", id);
+      lmp->error->all(FLERR,"Fix '{}' is not of style external!", id);
+    auto fix = lmp->modify->get_fix_by_id(id);
+    if (!fix) lmp->error->all(FLERR,"Can not find fix with ID '{}'!", id);
+      lmp->error->all(FLERR,"Fix '{}' is not of style external!", id);
+    auto fix = lmp->modify->get_fix_by_id(id);
+    if (!fix) lmp->error->all(FLERR,"Can not find fix with ID '{}'!", id);
+      lmp->error->all(FLERR,"Fix '{}' is not of style external!", id);
+    auto fix = lmp->modify->get_fix_by_id(id);
+    if (!fix) lmp->error->all(FLERR,"Can not find fix with ID '{}'!", id);
+      lmp->error->all(FLERR,"Fix '{}' is not of style external!", id);
+    auto fix = lmp->modify->get_fix_by_id(id);
+    if (!fix) lmp->error->all(FLERR,"Can not find fix with ID '{}'!", id);
+      lmp->error->all(FLERR,"Fix '{}' is not of style external!", id);
+  return lmp->update->whichflag;
+  return lmp->timer->force_timeout();
+    Error *error = lmp->error;
+    Error *error = lmp->error;
